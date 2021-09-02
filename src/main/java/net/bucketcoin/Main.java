@@ -4,6 +4,9 @@ import lombok.SneakyThrows;
 import net.bucketcoin.message.SendBCKT;
 import net.bucketcoin.wallet.Wallet;
 
+/**
+ * Testing file
+ */
 public class Main {
 
     @SneakyThrows

@@ -45,7 +45,7 @@ public class Miner {
                 add(transaction);
                 add(new Transaction(6, "miner", "miner", 0));
             }});
-            this.mine(block.getNonce(), MiningFramework.CUDA);
+            this.mine(block.getNonce(), MiningFramework.JavaCPU);
             System.out.println(new Gson().newBuilder().create().toJson(block));
             Bucketcoin.getInstance().chain.push(block);
             Broadcast.block(block);
@@ -80,7 +80,7 @@ public class Miner {
 
                 while(true) {
                     var hash = DigestUtils.md5Hex(String.valueOf(nonce + sol));
-                    System.out.println(hash);
+                    // System.out.println(hash);
                     if(hash.startsWith(difficultyString)) {
                         Logger.getGlobal().info("Solution accepted : " + hash);
                         return;

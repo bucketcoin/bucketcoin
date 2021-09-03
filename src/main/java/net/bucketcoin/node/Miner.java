@@ -35,9 +35,9 @@ public class Miner {
     }
 
     @SneakyThrows
-    public void pushBlock(@NotNull Transaction transaction, Key publicKey, byte[] signature) {
+    public void pushBlock(@NotNull Transaction transaction, Key senderPublicKey, byte[] signature) {
         Cipher c = Cipher.getInstance("RSA");
-        c.init(Cipher.DECRYPT_MODE, publicKey);
+        c.init(Cipher.DECRYPT_MODE, senderPublicKey);
         final byte[] dec = c.doFinal(signature);
         if(Arrays.equals(dec, DigestUtils.shaHex(transaction.toString()).getBytes())) {
 
@@ -57,7 +57,7 @@ public class Miner {
      * Mines the block.
      * @param nonce The nonce.
      */
-    private void mine(int nonce, MiningFramework minerType) {
+    public void mine(int nonce, MiningFramework minerType) {
 
         int sol = 1;
         final String difficultyString = "00000";
@@ -80,7 +80,7 @@ public class Miner {
 
                 while(true) {
                     var hash = DigestUtils.md5Hex(String.valueOf(nonce + sol));
-                    // System.out.println(hash);
+                    System.out.println(hash); // DEBUG PURPOSES
                     if(hash.startsWith(difficultyString)) {
                         Logger.getGlobal().info("Solution accepted : " + hash);
                         return;

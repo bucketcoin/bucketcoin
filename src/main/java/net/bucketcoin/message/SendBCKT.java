@@ -2,6 +2,7 @@ package net.bucketcoin.message;
 
 import net.bucketcoin.block.Transaction;
 import net.bucketcoin.node.Miner;
+import net.bucketcoin.p2p.Broadcast;
 import net.bucketcoin.wallet.Wallet;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,7 @@ public class SendBCKT extends Message {
         var c = Cipher.getInstance("RSA");
         c.init(Cipher.ENCRYPT_MODE, sender.getPrivateKey());
         var signature = c.doFinal(transaction_sha256.getBytes());
-        Miner.getInstance().pushBlock(transaction, sender.publicKey, signature);
+        Broadcast.transaction(transaction, sender.publicKey, signature); // network effect
     }
 
 }

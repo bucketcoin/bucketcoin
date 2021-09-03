@@ -10,8 +10,8 @@ public final class Node extends peerbase.Node {
         return n;
     }
 
-    private class Router implements RouterInterface {
-        private Node peer;
+    private static class Router implements RouterInterface {
+        private final Node peer;
 
         public Router(Node peer) {
             this.peer = peer;

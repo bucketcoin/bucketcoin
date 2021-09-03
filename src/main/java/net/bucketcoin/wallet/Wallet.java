@@ -3,7 +3,7 @@ package net.bucketcoin.wallet;
 import java.security.*;
 import java.util.LinkedHashSet;
 
-public class Wallet {
+public final class Wallet {
 
     public final PublicKey publicKey;
     private final PrivateKey privateKey;

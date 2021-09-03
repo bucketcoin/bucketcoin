@@ -3,6 +3,7 @@ module net.bucketcoin {
     exports net.bucketcoin.node;
     exports net.bucketcoin.block;
     exports net.bucketcoin.message;
+    exports net.bucketcoin.wallet;
 
     requires lombok;
     requires org.jetbrains.annotations;

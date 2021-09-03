@@ -4,8 +4,12 @@ import com.google.gson.GsonBuilder;
 import net.bucketcoin.block.Block;
 import net.bucketcoin.block.Trade;
 import net.bucketcoin.block.Transaction;
+import net.bucketcoin.wallet.Wallet;
+import org.jetbrains.annotations.NotNull;
 import peerbase.PeerInfo;
 import peerbase.PeerMessage;
+
+import java.security.Key;
 
 public class Broadcast {
 
@@ -35,10 +39,13 @@ public class Broadcast {
         }
     }
     /**
-     * Broadcasts a validated transaction to the rest of the P2P network.
+     * Broadcasts a transaction (yet to be validated) to the rest of the P2P network.
      * @param transaction The transaction that has been validated.
+     * @param publicKey The transaction sender's public key.
+     * @param signature The signature of the transaction to be validated.
+     * @see net.bucketcoin.node.Miner#pushBlock(Transaction, Key, byte[])
      */
-    public static void transaction(Transaction transaction) {
+    public static void transaction(@NotNull Transaction transaction, Key publicKey, byte[] signature) {
         PeerMessage peerMessage = new PeerMessage(TRANSACTION, transaction.toString());
     }
     /**

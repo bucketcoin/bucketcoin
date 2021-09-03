@@ -29,7 +29,9 @@ public class Transaction implements Serializable, Blockable {
         this.GasFee = gas_fee;
     }
 
-
+    /**
+     * Returns a JSON representation of this {@linkplain Transaction}
+     */
     @Override
     public String toString() {
         var g = new GsonBuilder().create();

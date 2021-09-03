@@ -45,7 +45,7 @@ public final class Bucketcoin {
      * Gets the genesis block of the chain.
      */
     public Block getGenesis() {
-        return chain.get(1);
+        return chain.get(0);
     }
 
 }

@@ -7,8 +7,6 @@ import jcuda.jcurand.curandGenerator;
 import jcuda.runtime.JCuda;
 import net.bucketcoin.node.Miner;
 import org.apache.commons.codec.digest.DigestUtils;
-import com.sun.jna.*;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 

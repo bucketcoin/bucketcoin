@@ -31,7 +31,6 @@ public final class Bucketcoin {
             add(new Transaction(694.20, "spy", "your mother", 3));
 
         }}));
-
     }
 
     /**

@@ -10,6 +10,10 @@ public interface Contract extends Blockable {
 	 */
 	boolean execute();
 
+	/**
+	 * Gets the version of the smart
+	 * @return the versioning number
+	 */
 	int getVersion();
 
 }

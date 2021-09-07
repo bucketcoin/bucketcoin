@@ -6,6 +6,9 @@ module net.bucketcoin {
     exports net.bucketcoin.wallet;
     exports net.bucketcoin.contract.interfaces;
 
+    opens net.bucketcoin.block to com.google.gson;
+    opens net.bucketcoin.message to com.google.gson;
+
     requires lombok;
     requires org.jetbrains.annotations;
     requires peerbase;

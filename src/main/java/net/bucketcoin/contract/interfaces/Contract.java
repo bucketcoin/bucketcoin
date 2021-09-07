@@ -10,12 +10,6 @@ public interface Contract extends Blockable {
 	 */
 	boolean execute();
 
-	/**
-	 * Returns the gas fee in 0.000001 BCKT.
-	 */
-	@Override
-	double getGasFee();
-
 	int getVersion();
 
 }

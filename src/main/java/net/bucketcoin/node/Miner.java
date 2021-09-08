@@ -1,9 +1,11 @@
 package net.bucketcoin.node;
 
+import static net.bucketcoin.algorithm.DifficultyAlgorithm.*;
+
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
 import net.bucketcoin.block.Block;
-import net.bucketcoin.Bucketcoin;
+import net.bucketcoin.crypto.Bucketcoin;
 import net.bucketcoin.block.Transaction;
 import net.bucketcoin.node.gpu.CUDA;
 import net.bucketcoin.p2p.Broadcast;
@@ -12,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 
 import javax.crypto.Cipher;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +42,7 @@ public class Miner {
         Cipher c = Cipher.getInstance("RSA");
         c.init(Cipher.DECRYPT_MODE, senderPublicKey);
         final byte[] dec = c.doFinal(signature);
-        if(Arrays.equals(dec, DigestUtils.shaHex(transaction.toString()).getBytes())) {
+        if(Arrays.equals(dec, DigestUtils.shaHex(transaction.toString()).getBytes(StandardCharsets.US_ASCII))) {
 
             var block = new Block(Bucketcoin.getInstance().getLastBlock().getHash(), new ArrayList<>() {{
                 add(transaction);
@@ -60,7 +63,11 @@ public class Miner {
     public void mine(int nonce, MiningFramework minerType) {
 
         int sol = 1;
-        final String difficultyString = "00000";
+        StringBuilder difficultyStringBuilder = new StringBuilder();
+
+        for(int i = 0; i < getDifficulty(); i++) {
+            difficultyStringBuilder.append('0');
+        }
 
         switch(minerType) {
 
@@ -69,7 +76,7 @@ public class Miner {
                 while(true) {
                     var hash = CUDA.md5HexGen(sol, nonce);
                     for(String s : hash) {
-                        if(s.startsWith(difficultyString)) {
+                        if(s.startsWith(difficultyStringBuilder.toString())) {
                             Logger.getGlobal().info("Solution accepted : " + s);
                             return;
                         }
@@ -81,7 +88,7 @@ public class Miner {
                 while(true) {
                     var hash = DigestUtils.md5Hex(String.valueOf(nonce + sol));
                     System.out.println(hash); // DEBUG PURPOSES
-                    if(hash.startsWith(difficultyString)) {
+                    if(hash.startsWith(difficultyStringBuilder.toString())) {
                         Logger.getGlobal().info("Solution accepted : " + hash);
                         return;
                     }

@@ -4,7 +4,7 @@ import static net.bucketcoin.algorithm.DifficultyAlgorithm.*;
 
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
-import net.bucketcoin.Bucketcoin;
+import net.bucketcoin.crypto.Bucketcoin;
 import net.bucketcoin.block.Block;
 import net.bucketcoin.block.Transaction;
 import net.bucketcoin.p2p.Broadcast;

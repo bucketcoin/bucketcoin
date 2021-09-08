@@ -15,10 +15,10 @@ module net.bucketcoin {
     requires java.sql;
     requires com.google.gson;
     requires commons.codec;
-    requires jcuda;
-    requires jcurand;
     requires com.sun.jna;
     requires java.compiler;
     requires ecj;
+    requires leveldb;
+    requires junit;
 
 }

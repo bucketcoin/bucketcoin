@@ -1,4 +1,4 @@
-package net.bucketcoin;
+package net.bucketcoin.crypto;
 
 import net.bucketcoin.block.Block;
 import net.bucketcoin.block.Transaction;
@@ -31,6 +31,9 @@ public final class Bucketcoin {
             add(new Transaction(694.20, "spy", "your mother", 3));
 
         }}));
+
+
+
     }
 
     /**
@@ -45,6 +48,10 @@ public final class Bucketcoin {
      */
     public Block getGenesis() {
         return chain.get(0);
+    }
+
+    public long getChainSize() {
+        return chain.size();
     }
 
 }

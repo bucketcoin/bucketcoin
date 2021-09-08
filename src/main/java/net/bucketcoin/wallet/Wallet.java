@@ -1,7 +1,6 @@
 package net.bucketcoin.wallet;
 
 import java.security.*;
-import java.util.LinkedHashSet;
 
 public final class Wallet {
 

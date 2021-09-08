@@ -18,7 +18,7 @@ public class DifficultyAlgorithm {
 	 * based on the number of {@linkplain net.bucketcoin.block.Block}s mined and
 	 * the {@linkplain Duration} taken to mine the blocks, in the Bucketcoin formula.
 	 * @param blocksMined The number of blocks mined (not only by this node) and broadcasted to the {@link net.bucketcoin.p2p.Node}.
-	 * @param duration The duration taken to mine the blocks. This should be recorded by the {@link net.bucketcoin.crypto.Bucketcoin} class.
+	 * @param duration The duration taken to mine the blocks. This should be recorded by the {@link net.bucketcoin.Bucketcoin} class.
 	 * @return The calculated difficulty.
 	 */
 	public static long calculateDifficulty(int blocksMined, Duration duration) {

@@ -1,5 +1,7 @@
 package net.bucketcoin.wallet;
 
+import net.bucketcoin.message.Message;
+
 import java.security.*;
 
 public final class Wallet {

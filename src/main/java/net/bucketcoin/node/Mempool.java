@@ -2,12 +2,10 @@ package net.bucketcoin.node;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import net.bucketcoin.Bucketcoin;
+import net.bucketcoin.crypto.Bucketcoin;
 import net.bucketcoin.block.Block;
-import net.bucketcoin.block.Blockable;
 import net.bucketcoin.block.Transaction;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.crypto.IllegalBlockSizeException;

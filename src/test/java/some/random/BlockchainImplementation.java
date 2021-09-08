@@ -1,12 +1,9 @@
 package some.random;
 
-import net.bucketcoin.Bucketcoin;
-import net.bucketcoin.block.Transaction;
-import net.bucketcoin.node.Mempool;
+import net.bucketcoin.crypto.Bucketcoin;
 import net.bucketcoin.node.Miner;
 import net.bucketcoin.p2p.Node;
 
-import java.nio.channels.MulticastChannel;
 import java.util.Objects;
 
 public class BlockchainImplementation {
@@ -22,17 +19,19 @@ public class BlockchainImplementation {
 		} else {
 			var n = Node.getInstance();
 			var g = Bucketcoin.getInstance().getGenesis();
-			Miner.getInstance().mine(g.getNonce(), Miner.MiningFramework.JavaCPU);
+			Miner.getInstance().mine(g.getNonce());
 		}
 
 	}
 
 	private static void printHelp() {
 
-		System.out.println("GenesisMiner\n\n" +
-				"mine -> Starts mining blocks\n" +
-				"private -> Prints private key\n" +
-				"public -> Prints public key");
+		System.out.println("""
+				GenesisMiner
+
+				mine -> Starts mining blocks
+				private -> Prints private key
+				public -> Prints public key""");
 
 	}
 

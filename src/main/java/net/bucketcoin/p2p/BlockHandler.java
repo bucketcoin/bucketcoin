@@ -1,7 +1,7 @@
 package net.bucketcoin.p2p;
 
 import com.google.gson.GsonBuilder;
-import net.bucketcoin.Bucketcoin;
+import net.bucketcoin.crypto.Bucketcoin;
 import net.bucketcoin.block.Block;
 import net.bucketcoin.node.Mempool;
 import peerbase.HandlerInterface;

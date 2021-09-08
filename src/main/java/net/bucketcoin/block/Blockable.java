@@ -12,4 +12,9 @@ public interface Blockable extends Serializable {
      */
     public double getGasFee();
 
+    /**
+     * Converts the {@linkplain Blockable} into a JSON string.
+     */
+    public String toString();
+
 }

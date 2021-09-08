@@ -51,8 +51,9 @@ public class Broadcast {
     /**
      * Broadcasts the newly requested trade to the rest of the P2P network.
      * @param trade The trade that has been requested.
+     * @param publicKey The Trade request
      */
-    public static void trade(Trade trade) {
+    public static void tradeRequest(Trade trade, Key publicKey, byte[] signature) {
 
     }
 

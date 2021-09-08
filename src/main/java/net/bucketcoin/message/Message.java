@@ -4,6 +4,11 @@ import lombok.Getter;
 import net.bucketcoin.wallet.Wallet;
 import org.jetbrains.annotations.NotNull;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public abstract class Message {
@@ -60,5 +65,14 @@ public abstract class Message {
         this.toGet = toGet;
         this.gas_fee = gas_fee;
     }
+
+    /**
+     * Sends the Message to the network.
+     */
+    public abstract void send() throws NoSuchPaddingException,
+                                       NoSuchAlgorithmException,
+                                       InvalidKeyException,
+                                       IllegalBlockSizeException,
+                                       BadPaddingException;
 
 }

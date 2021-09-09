@@ -47,7 +47,7 @@ public class DifficultyAlgorithm {
 	}
 
 	private static long getTarget() {
-		return 11520 / 1500 - 6;
+		return 11520 / 1500;
 	}
 
 	/**

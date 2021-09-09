@@ -1,4 +1,4 @@
-package net.bucketcoin.contract;
+package net.bucketcoin.contract.proc;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;

@@ -1,4 +1,4 @@
-package net.bucketcoin.contract;
+package net.bucketcoin.contract.proc;
 
 import org.eclipse.jdt.internal.compiler.tool.EclipseCompiler;
 import org.jetbrains.annotations.Contract;

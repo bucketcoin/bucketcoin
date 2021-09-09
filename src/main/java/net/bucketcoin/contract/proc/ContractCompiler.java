@@ -3,11 +3,15 @@ package net.bucketcoin.contract.proc;
 import org.eclipse.jdt.internal.compiler.tool.EclipseCompiler;
 import org.jetbrains.annotations.Contract;
 
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.TypeElement;
 import javax.tools.*;
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
-public class ContractCompiler {
+public final class ContractCompiler {
 
 	private ContractCompiler() {
 		//no instance
@@ -31,4 +35,16 @@ public class ContractCompiler {
 
 	}
 
+	public static class ContractProcessor extends AbstractProcessor {
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @param annotations
+		 * @param roundEnv
+		 */
+		@Override
+		public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+			return false;
+		}
+	}
 }

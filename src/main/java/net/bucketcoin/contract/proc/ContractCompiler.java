@@ -11,6 +11,8 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
+import static net.bucketcoin.contract.proc.ContractFileOperations.verify;
+
 public final class ContractCompiler {
 
 	private ContractCompiler() {
@@ -20,10 +22,14 @@ public final class ContractCompiler {
 	/**
 	 *
 	 * @param javaContractFile The contract file.
-	 * @return whether the file was com
+	 * @return whether the file was compiled successfully
 	 */
 	@Contract(pure = true)
 	public static boolean compileJava(File javaContractFile) {
+
+		if(!verify(javaContractFile)) {
+			return false;
+		}
 
 		final var compiler = new EclipseCompiler();
 		final var diagnostics = new DiagnosticCollector<JavaFileObject>();
@@ -35,16 +41,4 @@ public final class ContractCompiler {
 
 	}
 
-	public static class ContractProcessor extends AbstractProcessor {
-		/**
-		 * {@inheritDoc}
-		 *
-		 * @param annotations
-		 * @param roundEnv
-		 */
-		@Override
-		public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-			return false;
-		}
-	}
 }

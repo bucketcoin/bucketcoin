@@ -20,5 +20,6 @@ module net.bucketcoin {
     requires ecj;
     requires leveldb;
     requires junit;
+    requires com.thoughtworks.qdox;
 
 }

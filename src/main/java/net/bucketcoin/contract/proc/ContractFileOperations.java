@@ -19,7 +19,7 @@ public final class ContractFileOperations {
 	/**
 	 * Verifies the validity of the source file for broadcasting to the network and
 	 * for compilation on this running node.
-	 * @param source The
+	 * @param source The .java source file to validate
 	 * @return Whether the source file is valid for broadcasting.
 	 */
 	@SneakyThrows

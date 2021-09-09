@@ -1,7 +1,6 @@
 package some.random;
 
 import net.bucketcoin.contract.interfaces.Contract;
-import net.bucketcoin.contract.permitted.*;
 
 public class ContractExample implements Contract {
 	@Override

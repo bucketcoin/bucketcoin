@@ -18,7 +18,6 @@ module net.bucketcoin {
     requires com.sun.jna;
     requires java.compiler;
     requires ecj;
-    requires leveldb;
     requires junit;
     requires com.thoughtworks.qdox;
 

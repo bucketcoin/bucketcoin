@@ -1,6 +1,9 @@
 package net.bucketcoin.wallet;
 
 import net.bucketcoin.message.Message;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.security.*;
 
@@ -15,6 +18,11 @@ public final class Wallet {
         KeyPair keyPair = k.generateKeyPair();
         publicKey = keyPair.getPublic();
         privateKey = keyPair.getPrivate();
+    }
+
+    @Contract(" -> new")
+    public @NotNull String getAddress() {
+        return DigestUtils.shaHex(publicKey.toString());
     }
 
     public Key getPrivateKey() {

@@ -2,6 +2,9 @@ package net.bucketcoin.block;
 
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
+import net.bucketcoin.crypto.state.StateTrie;
+import net.bucketcoin.crypto.state.StorageTrie;
+import net.bucketcoin.crypto.state.TransactionTrie;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,6 +12,7 @@ import java.io.Serializable;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * An instance of a block for the miner.
@@ -16,15 +20,17 @@ import java.util.ArrayList;
 public class Block implements Serializable {
 
     @Getter
-    private final int nonce = (int) Math.round(new SecureRandom().nextInt() * 694206942);
+    private final int nonce = Math.round(new SecureRandom().nextInt() * 694206942);
 
     @NotNull
-    private final Timestamp timestamp;
-    private final String prevHash;
-    @Getter
-    private double GasFee;
-    @Getter
-    private @NotNull ArrayList<Blockable> transactions = new ArrayList<>();
+    private final Timestamp timestamp; // the block timestamp
+    private final String prevHash; // parent hash
+    @Getter private double GasFee; // the gas fee to pay
+    @Getter private @NotNull
+    final ArrayList<Blockable> transactions; // transactions to store
+    private StateTrie stateRoot;
+    private StorageTrie storageRoot;
+    private TransactionTrie transactionRoot;
 
     public Block(@NotNull String prevHash, @NotNull ArrayList<Blockable> transactions) {
         this.prevHash = prevHash;
@@ -32,9 +38,9 @@ public class Block implements Serializable {
         timestamp = new Timestamp(System.currentTimeMillis());
     }
 
-    public Block(@NotNull String prevHash, @NotNull Blockable transaction) {
+    public Block(@NotNull String prevHash, @NotNull Blockable... transactions) {
         this.prevHash = prevHash;
-        transactions.add(transaction);
+        this.transactions = (ArrayList<Blockable>) Arrays.asList(transactions);
         timestamp = new Timestamp(System.currentTimeMillis());
     }
 

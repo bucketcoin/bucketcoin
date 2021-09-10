@@ -1,22 +1,23 @@
-package net.bucketcoin.crypto.internal;
+package net.bucketcoin.crypto.state;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.iq80.leveldb.*;
 import static org.iq80.leveldb.impl.Iq80DBFactory.*;
 import java.io.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class AddressRecord {
+public final class StateTrie {
 
 	@SuppressWarnings("InstantiationOfUtilityClass")
-	private static final AddressRecord adr = new AddressRecord();
+	private static final StateTrie adr = new StateTrie(); // This is a singleton class.
 
-	public static AddressRecord getInstance() {
+	public static StateTrie getInstance() {
 		return adr;
 	}
 
 	@SneakyThrows
-	private AddressRecord() {
+	private StateTrie() {
 		var opt = new Options();
 		opt.createIfMissing();
 		try(var db = factory.open(new File("BCKTAddressRecord"), opt)) {
@@ -24,5 +25,8 @@ public class AddressRecord {
 			db.forEach(entry -> k.getAndIncrement());
 		}
 	}
+
+	@Getter
+	public static record AddressProperties(int nonce, double balance, StorageTrie storageRoot, String codeHash) {}
 
 }

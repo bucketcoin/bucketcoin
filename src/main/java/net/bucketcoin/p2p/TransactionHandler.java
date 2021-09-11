@@ -16,7 +16,7 @@ public class TransactionHandler implements HandlerInterface {
 	public void handleMessage(PeerConnection peerconn, PeerMessage msg) {
 
 		Block block = new Block("",
-				new GsonBuilder().disableHtmlEscaping()
+				new GsonBuilder()
 						.create().fromJson
 								(msg.getMsgData(), Transaction.class));
 

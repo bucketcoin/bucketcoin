@@ -1,10 +1,12 @@
 package net.bucketcoin.wallet;
 
+import lombok.SneakyThrows;
 import net.bucketcoin.message.Message;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 
 public final class Wallet {
@@ -27,6 +29,15 @@ public final class Wallet {
 
     public Key getPrivateKey() {
         return privateKey;
+    }
+
+    @SneakyThrows
+    public void sendMessage(Message message) {
+        message.send();
+    }
+
+    public byte[] asBytes() {
+        return getAddress().getBytes(StandardCharsets.US_ASCII);
     }
 
 }

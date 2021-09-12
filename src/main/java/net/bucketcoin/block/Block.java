@@ -28,9 +28,9 @@ public class Block implements Serializable {
     @Getter private double GasFee; // the gas fee to pay
     @Getter private @NotNull
     final ArrayList<Blockable> transactions; // transactions to store
-    private StateTrie stateRoot;
-    private StorageTrie storageRoot;
-    private TransactionTrie transactionRoot;
+    private String stateRoot;
+    private String storageRoot;
+    private String transactionRoot;
 
     public Block(@NotNull String prevHash, @NotNull ArrayList<Blockable> transactions) {
         this.prevHash = prevHash;

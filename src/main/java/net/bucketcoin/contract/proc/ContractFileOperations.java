@@ -3,8 +3,13 @@ package net.bucketcoin.contract.proc;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.library.SortedClassLibraryBuilder;
 import lombok.SneakyThrows;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.apache.commons.text.StringEscapeUtils;
 
+import javax.tools.JavaFileObject;
 import java.io.*;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
 
@@ -39,12 +44,54 @@ public final class ContractFileOperations {
 	}
 
 	/**
+	 * Converts a contract file to a {@link String} representation.
+	 * @param contractFile The contract file to make a string representation of.
+	 * @return the {@link} String representation of the contract file.
+	 * @throws IOException if an IO error occurred.
+	 * @throws FileNotFoundException if the file passed to this method is non-existent.
+	 * @throws InvalidParameterException if the file passed to this method is either opened for writing and not reading, or it does not support character access.
+	 * @see javax.tools.FileObject#openReader(boolean)
+	 */
+	@Contract("null -> fail")
+	public static String getContractAsString(File contractFile) throws IOException {
+		if(!contractFile.exists()) throw new FileNotFoundException("Contract file passed does not exist.");
+		JavaFileObject file = (JavaFileObject) contractFile;
+		try {
+			Reader reader = file.openReader(false);
+			return read(reader);
+		} catch(IOException varA1) {
+			try {
+				var reader = new BufferedReader(
+						new FileReader(contractFile)
+				);
+				return read(reader);
+			} catch(IOException varA2) {
+				throw new IOException(varA2.getMessage());
+			}
+		} catch(IllegalStateException varB1) {
+			throw new InvalidParameterException("The file passed is opened for writing and not reading.");
+		} catch(UnsupportedOperationException varC1) {
+			throw new InvalidParameterException("The file passed does not support character access.");
+		}
+	}
+
+	private static String read(@NotNull Reader reader) throws IOException {
+		var s = new StringBuilder();
+		int num;
+		while((num = reader.read()) != -1)
+		{
+			s.append((char) num);
+		}
+		return StringEscapeUtils.unescapeJava(s.toString());
+	}
+
+	/**
 	 * Writes a template contract source file in the specified parameter <code>fileToWrite</code>.
 	 * @param fileToWrite The file to write the contract source file to. Must have a '.java' extension. Will be created if it does not exist
 	 * @throws IOException if an I/O error occurs.
 	 */
 	@SuppressWarnings("ResultOfMethodCallIgnored")
-	public static void writeContractFile(File fileToWrite) throws IOException {
+	public static void writeContractFile(@NotNull File fileToWrite) throws IOException {
 		// do necessary checks before writing
 		if(!fileToWrite.exists()) fileToWrite.createNewFile();
 		if(!fileToWrite.canWrite()) {
@@ -61,14 +108,15 @@ public final class ContractFileOperations {
 		writer.println("""
 				// package your.company.project
 				
-				// These two imports are mandatory imports and the
-				// only allowed imports. Any inclusion of other /
-				// imports will result in a failure to compile |
-				// and rejection across the blockchain network. \
+				/* These two imports are mandatory imports and the
+				   only allowed imports. Any inclusion of other
+				   imports will result in a failure to compile
+				   and rejection across the blockchain network. */
+				   
 				import net.bucketcoin.contract.interfaces.Contract;
 				import net.bucketcoin.contract.permitted.*;
 				    
-				public class ContractExample implements Contract {
+				public final class ContractExample implements Contract {
 					
 					/*
 				    * The (one-time) gas fee for an approval Message.

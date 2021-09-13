@@ -11,6 +11,8 @@ import java.util.Stack;
  */
 public final class Bucketcoin {
 
+    public static final int BSCIVersion = 1;
+
     private static final Bucketcoin bucketcoin = new Bucketcoin();
     public Stack<Block> chain = new Stack<>();
 

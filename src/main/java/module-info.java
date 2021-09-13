@@ -5,6 +5,7 @@ module net.bucketcoin {
     exports net.bucketcoin.message;
     exports net.bucketcoin.wallet;
     exports net.bucketcoin.contract.interfaces;
+    exports net.bucketcoin.exception;
 
     opens net.bucketcoin.block to com.google.gson;
     opens net.bucketcoin.message to com.google.gson;
@@ -15,6 +16,7 @@ module net.bucketcoin {
     requires java.sql;
     requires com.google.gson;
     requires commons.codec;
+    requires org.apache.commons.text;
     requires com.sun.jna;
     requires java.compiler;
     requires ecj;
@@ -22,5 +24,6 @@ module net.bucketcoin {
     requires com.thoughtworks.qdox;
     requires leveldb;
     requires leveldb.api;
+    requires commons.io;
 
 }

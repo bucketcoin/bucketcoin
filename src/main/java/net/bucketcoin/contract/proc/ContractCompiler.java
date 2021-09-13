@@ -1,19 +1,20 @@
 package net.bucketcoin.contract.proc;
 
 import lombok.SneakyThrows;
+import net.bucketcoin.exception.ContractException;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jdt.internal.compiler.tool.EclipseCompiler;
 import org.jetbrains.annotations.Contract;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.element.TypeElement;
 import javax.tools.*;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.List;
-import java.util.Set;
 
 import static net.bucketcoin.contract.proc.ContractFileOperations.verify;
 
@@ -25,13 +26,14 @@ public final class ContractCompiler {
 
 	/**
 	 * Compiles a Java contract file.
+	 * If the compilation fails then a file with name 'log.txt' is generated.
 	 * @param javaContractFile The contract file.
-	 * @param printStackTrace Whether the stack trace should be printed if compilation fails.
 	 * @return whether the file was compiled successfully
 	 */
 	@SneakyThrows
 	@Contract(pure = true)
-	public static boolean compile(File javaContractFile, boolean printStackTrace) {
+	@SuppressWarnings("NullArgumentToVariableArgMethod")
+	public static boolean compile(File javaContractFile) {
 
 		if(!verify(javaContractFile)) {
 			return false;
@@ -44,10 +46,25 @@ public final class ContractCompiler {
 		final var task = compiler.getTask(null, manager, diagnostics, null, null, sources);
 
 		for(JavaFileObject javaFileObject : sources) {
-			var logfile = new File(javaContractFile.getParentFile().getAbsolutePath() + File.separator + "logfile.txt");
+			var logfile = new File(javaContractFile.getParentFile().getAbsolutePath() + File.separator + "log.txt");
 			var err = new FileOutputStream(logfile);
 			var x = compiler.run(null, null, err, ((File) javaFileObject).getAbsolutePath());
-			return x == 0;
+
+			try {
+				URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { ((File) javaFileObject).getParentFile().toURI().toURL() });
+				Class<?> cls = Class.forName(FilenameUtils.getBaseName(javaFileObject.getName()), true, classLoader);
+				Object instance = cls.getDeclaredConstructor().newInstance();
+				Method method = cls.getDeclaredMethod("add", null);
+				System.out.println(method.invoke(instance, null));
+				return true;
+			} catch (Exception e) {
+				try {
+					throw new ContractException(e);
+				} catch(ContractException contractException) {
+					contractException.printStackTrace(new PrintWriter(new FileWriter(logfile)));
+				}
+			}
+
 		}
 
 		return false;

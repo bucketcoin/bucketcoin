@@ -6,6 +6,8 @@ module net.bucketcoin {
     exports net.bucketcoin.wallet;
     exports net.bucketcoin.contract.interfaces;
     exports net.bucketcoin.exception;
+    exports net.bucketcoin.runtime.exception;
+    exports net.bucketcoin.runtime.event;
 
     opens net.bucketcoin.block to com.google.gson;
     opens net.bucketcoin.message to com.google.gson;
@@ -25,5 +27,6 @@ module net.bucketcoin {
     requires leveldb;
     requires leveldb.api;
     requires commons.io;
+    requires com.google.common;
 
 }

@@ -42,7 +42,7 @@ public final class Bucketcoin {
 
         }}));
 
-        var t = new Thread(null, () -> {
+        var t1 = new Thread(null, () -> {
             int x = chain.size();
             boolean k = false;
             while(!threadInterrupted.get()) {
@@ -74,6 +74,12 @@ public final class Bucketcoin {
             }
 
         }, "duration");
+
+        t1.setDaemon(true);
+        t2.setDaemon(true);
+
+        t1.start();
+        t2.start();
 
     }
 

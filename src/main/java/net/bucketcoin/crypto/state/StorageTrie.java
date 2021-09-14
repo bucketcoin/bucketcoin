@@ -3,22 +3,23 @@ package net.bucketcoin.crypto.state;
 import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import net.bucketcoin.algorithm.merkletree.MerkleTree;
 import net.bucketcoin.p2p.Node;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * This class is a trie for storing contract data.
  */
-@SuppressWarnings("ClassCanBeRecord")
 public class StorageTrie {
 
-	private final String address;
+	@Getter private final String address;
 	private static final StorageTrie userTrie = new StorageTrie(Node.nodeWallet.getAddress());
-	private static MerkleTree storageMerkleTree;
+	/** @see net.bucketcoin.contract.proc.ContractFileOperations#getContractAsString(File)  **/
+	private final HashSet<String> contractsActive = new HashSet<>(), contractsPending = new HashSet<>();
 
 	/**
 	 * Creates a StorageTrie unique to each address.
@@ -26,7 +27,6 @@ public class StorageTrie {
 	 */
 	@SneakyThrows
 	public StorageTrie(String address) {
-		StorageTrie.storageMerkleTree = new MerkleTree(MessageDigest.getInstance("SHA-256"));
 		this.address = address;
 	}
 
@@ -43,6 +43,31 @@ public class StorageTrie {
 		return DigestUtils.sha(toString().getBytes(StandardCharsets.US_ASCII));
 	}
 
+	public HashMap<Integer, String> getActiveContractsAsMap() {
+		return getMapFromSet(contractsActive);
+	}
 
+	public HashMap<Integer, String> getPendingContractsAsMap() {
+		return getMapFromSet(contractsPending);
+	}
+
+	/**
+	 * Converts a {@link HashSet} to a {@link HashMap}
+	 * @param objects The set to convert to a map.
+	 * @param <E> The type to get a set from.
+	 * @return The newly made {@link HashMap}.
+	 * @apiNote The generated map functions like a list, with the key being the position.
+	 * The position 0 is the first value, and the returned value <bold>may differ</bold>.
+	 * @see HashSet
+	 */
+	private synchronized <E> HashMap<Integer, E> getMapFromSet(HashSet<E> objects) {
+		int p = 0;
+		HashMap<Integer, E> hashMap = new HashMap<>();
+		for(E e : objects) {
+			hashMap.put(p, e);
+			++p;
+		}
+		return hashMap;
+	}
 
 }

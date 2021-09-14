@@ -3,22 +3,22 @@ package net.bucketcoin.crypto.state;
 import com.google.gson.GsonBuilder;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import net.bucketcoin.algorithm.merkletree.MerkleTree;
 import net.bucketcoin.p2p.Node;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.iq80.leveldb.*;
+import org.jetbrains.annotations.NotNull;
 
 import static org.iq80.leveldb.impl.Iq80DBFactory.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.LinkedHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public final class StateTrie {
 
 	@SuppressWarnings("InstantiationOfUtilityClass")
 	private static final StateTrie adr = new StateTrie(); // This is a singleton class.
-	private static MerkleTree merkleTree;
 	private static DB database;
 
 	public static StateTrie getInstance() {
@@ -29,21 +29,22 @@ public final class StateTrie {
 	private StateTrie() {
 		var opt = new Options();
 		opt.createIfMissing();
-		var db = factory.open(new File("BCKTAddressRecord"), opt);
-		try {
-			var thisUser = new AddressProperties(0, 0, StorageTrie.getUserTrie().toHash(), null);
-			AtomicInteger k = new AtomicInteger(0);
-			db.forEach(entry -> k.getAndIncrement());
-			if(k.equals(new AtomicInteger(0))) db.put(Node.nodeWallet.asBytes(), thisUser.asBytes());
-		} finally {
-			StateTrie.database = db;
-		}
-		merkleTree = new MerkleTree(MessageDigest.getInstance("SHA-256"));
-		// merkleTree.add();
+		database = factory.open(new File("BCKTAddressRecord"), opt);
+		var thisUser = new AddressProperties(0, 0, StorageTrie.getUserTrie().toHash(), null);
+		AtomicInteger k = new AtomicInteger(0);
+		database.forEach(entry -> k.getAndIncrement());
+		if(k.equals(new AtomicInteger(0))) database.put(Node.nodeWallet.asBytes(), thisUser.asBytes());
+
 	}
 
 	public static AddressProperties queryAddress(byte[] address) {
 		return AddressProperties.fromBytes(database.get(address, new ReadOptions().verifyChecksums(true)));
+	}
+
+	public static void addAccount(@NotNull String address, @NotNull AddressProperties addressProperties) {
+
+		database.put(address.getBytes(StandardCharsets.US_ASCII), addressProperties.asBytes());
+
 	}
 
 	/**

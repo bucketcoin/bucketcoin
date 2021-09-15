@@ -14,9 +14,9 @@ public final class Wallet {
     public final PublicKey publicKey;
     private final PrivateKey privateKey;
 
-    public Wallet() throws NoSuchAlgorithmException {
-        KeyPairGenerator k = KeyPairGenerator.getInstance("EC"); // use ECDSA instead of RSA
-        k.initialize(2048);
+    public Wallet() throws NoSuchAlgorithmException, NoSuchProviderException {
+        KeyPairGenerator k = KeyPairGenerator.getInstance("RSA");
+        k.initialize(512);
         KeyPair keyPair = k.generateKeyPair();
         publicKey = keyPair.getPublic();
         privateKey = keyPair.getPrivate();

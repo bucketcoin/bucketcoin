@@ -6,6 +6,7 @@ import net.bucketcoin.runtime.exception.InitializationException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.jar.JarFile;
 
@@ -15,6 +16,7 @@ public final class EventCentral {
 	private static final EventCentral eventCentral = new EventCentral();
 	private static final EventClassLoader eventClassLoader = new EventClassLoader();
 	private final HashSet<Class<?>> events = new HashSet<>();
+	final HashMap<EventHandler<? extends Event>, Class<?>> eventAssoc = new HashMap<>();
 
 	public static EventCentral getInstance() {
 		return eventCentral;

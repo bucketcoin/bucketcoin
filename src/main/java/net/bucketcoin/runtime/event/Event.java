@@ -1,16 +1,15 @@
 package net.bucketcoin.runtime.event;
 
-import com.google.common.eventbus.Subscribe;
-import org.jetbrains.annotations.Contract;
+import lombok.Getter;
 
-@SuppressWarnings("UnstableApiUsage")
+
 public abstract class Event {
 
-	@Contract("null -> fail")
-	@Subscribe
-	public abstract <T extends Event> void handle(T event);
+	@Getter
+	private final Object[] args;
 
-	public Event() {
+	public Event(Object... args) {
+		this.args = args;
 		EventCentral.addEventType(this);
 	}
 

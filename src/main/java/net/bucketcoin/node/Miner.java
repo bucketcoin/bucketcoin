@@ -4,11 +4,14 @@ import static net.bucketcoin.algorithm.DifficultyAlgorithm.*;
 
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
+import net.bucketcoin.block.Blockable;
 import net.bucketcoin.crypto.Bucketcoin;
 import net.bucketcoin.block.Block;
 import net.bucketcoin.block.Transaction;
 import net.bucketcoin.p2p.Broadcast;
+import net.bucketcoin.p2p.Node;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -43,13 +46,34 @@ public class Miner {
 
             var block = new Block(Bucketcoin.getInstance().getLastBlock().getHash(), new ArrayList<>() {{
                 add(transaction);
-                add(new Transaction(6, "miner", "miner", 0));
+                add(new Transaction(6, "rewards", Node.nodeWallet.getAddress(), 0));
             }});
             this.mine(block.getNonce());
             System.out.println(new Gson().newBuilder().create().toJson(block));
             Bucketcoin.getInstance().chain.push(block);
             Broadcast.block(block);
 
+        }
+    }
+
+    @SneakyThrows
+    public void pushBlock(Key senderPublicKey, byte[] signature, Blockable... transactions) {
+        for(Blockable transaction : transactions) {
+            Cipher c = Cipher.getInstance("RSA");
+            c.init(Cipher.DECRYPT_MODE, senderPublicKey);
+            final byte[] dec = c.doFinal(signature);
+            if(Arrays.equals(dec, DigestUtils.shaHex(transaction.toString()).getBytes(StandardCharsets.US_ASCII))) {
+
+                var block = new Block(Bucketcoin.getInstance().getLastBlock().getHash(), new ArrayList<>() {{
+                    add(transaction);
+                    add(new Transaction(6, "rewards", Node.nodeWallet.getAddress(), 0));
+                }});
+                this.mine(block.getNonce());
+                System.out.println(new Gson().newBuilder().create().toJson(block));
+                Bucketcoin.getInstance().chain.push(block);
+                Broadcast.block(block);
+
+            }
         }
     }
 

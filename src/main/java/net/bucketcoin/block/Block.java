@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * An instance of a block for the miner.
@@ -26,26 +27,29 @@ public class Block implements Serializable {
     private final Timestamp timestamp; // the block timestamp
     private final String prevHash; // parent hash
     @Getter private double GasFee; // the gas fee to pay
-    @Getter private @NotNull
-    final ArrayList<Blockable> transactions; // transactions to store
+    private @NotNull List<Blockable> blockentries = new ArrayList<>(); // transactions to store
     private String stateRoot;
     private String storageRoot;
     private String transactionRoot;
 
+    public Blockable[] getBlockEntries() {
+        return blockentries.toArray(Blockable[]::new);
+    }
+
     public Block(@NotNull String prevHash, @NotNull ArrayList<Blockable> transactions) {
         this.prevHash = prevHash;
-        this.transactions = transactions;
+        this.blockentries = transactions;
         timestamp = new Timestamp(System.currentTimeMillis());
     }
 
     public Block(@NotNull String prevHash, @NotNull Blockable... transactions) {
         this.prevHash = prevHash;
-        this.transactions = (ArrayList<Blockable>) Arrays.asList(transactions);
+        this.blockentries.addAll(Arrays.asList(transactions));
         timestamp = new Timestamp(System.currentTimeMillis());
     }
 
     {
-        for(Blockable b : getTransactions()) GasFee += b.getGasFee();
+        for(Blockable b : getBlockEntries()) GasFee += b.getGasFee();
     }
 
     public String getHash() {

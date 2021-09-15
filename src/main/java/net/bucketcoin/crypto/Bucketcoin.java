@@ -17,12 +17,25 @@ import static net.bucketcoin.algorithm.DifficultyAlgorithm.calculateDifficulty;
 public final class Bucketcoin {
 
     public static final int BSCIVersion = 1;
+    private static final Block genesis = new Block("", new ArrayList<>(){{
+
+        add(new Transaction(170, "spy", "yps", 3));
+        add(new Transaction(692, "yps", "your mother", 9));
+        add(new Transaction(694.20, "spy", "your mother", 3));
+
+    }});
 
     private static final Bucketcoin bucketcoin = new Bucketcoin();
     public Stack<Block> chain = new Stack<>();
 
     public static Bucketcoin getInstance() {
         return bucketcoin;
+    }
+
+    {
+
+        chain.add(genesis);
+
     }
 
     /**
@@ -34,13 +47,7 @@ public final class Bucketcoin {
         AtomicLong durationUntil1500thBlock = new AtomicLong(0);
 
         // Genesis block.
-        chain.push(new Block("", new ArrayList<>(){{
-
-            add(new Transaction(170, "spy", "yps", 3));
-            add(new Transaction(692, "yps", "your mother", 9));
-            add(new Transaction(694.20, "spy", "your mother", 3));
-
-        }}));
+        chain.push(genesis);
 
         var t1 = new Thread(null, () -> {
             int x = chain.size();
@@ -98,7 +105,7 @@ public final class Bucketcoin {
      * Gets the genesis block of the chain.
      */
     public Block getGenesis() {
-        return chain.get(0);
+        return genesis;
     }
 
     public long getChainSize() {

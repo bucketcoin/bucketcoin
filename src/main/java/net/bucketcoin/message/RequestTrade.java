@@ -2,6 +2,7 @@ package net.bucketcoin.message;
 
 import net.bucketcoin.block.Trade;
 import net.bucketcoin.block.Transaction;
+import net.bucketcoin.central.CryptoResources;
 import net.bucketcoin.p2p.Broadcast;
 import net.bucketcoin.wallet.Wallet;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -14,6 +15,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.List;
 
 public class RequestTrade extends Message {
@@ -46,10 +48,10 @@ public class RequestTrade extends Message {
     }
 
     @Override
-    public void send() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public void send() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException {
         Trade trade = new Trade(toGet, toSend, sender.publicKey.toString(), recipient.publicKey.toString(), gas_fee);
         String trade_sha256 = DigestUtils.shaHex(trade.toString());
-        var c = Cipher.getInstance("RSA");
+        var c = CryptoResources.getStandardCipher();
         c.init(Cipher.ENCRYPT_MODE, sender.getPrivateKey());
         var signature = c.doFinal(trade_sha256.getBytes(StandardCharsets.US_ASCII));
         Broadcast.tradeRequest(trade, sender.publicKey, signature); // network effect

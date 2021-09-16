@@ -17,7 +17,13 @@ import java.util.HashSet;
 public class StorageTrie {
 
 	@Getter private final String address;
-	private static final StorageTrie userTrie = new StorageTrie(Node.nodeWallet.getAddress());
+	private static final StorageTrie userTrie;
+
+	static {
+		if(Node.getNodeWallet() == null) throw new IllegalStateException("Node is not initialized, call to init(Wallet) must be made");
+		userTrie = new StorageTrie(Node.getNodeWallet().getAddress());
+	}
+
 	/** @see net.bucketcoin.contract.proc.ContractFileOperations#getContractAsString(File)  **/
 	private final HashSet<String> contractsActive = new HashSet<>(), contractsPending = new HashSet<>();
 

@@ -1,31 +1,37 @@
 package net.bucketcoin.p2p;
 
 import net.bucketcoin.wallet.Wallet;
+import org.jetbrains.annotations.Nullable;
 import peerbase.*;
 
 public final class Node extends peerbase.Node {
 
-    private static final Node n = new Node(0, new PeerInfo(6942), null);
-    public static Wallet nodeWallet = null;
-
+    private static Node n = null;
+    private static Wallet nodeWallet = null;
     /**
      * Returns the singleton Node for the {@link Wallet} provided.
-     * @param wallet The wallet to associate the node with. Once set, cannot be changed.
-     * @return The wallet instance.
+     * @return The Node instance.
      */
-    public static Node getInstance(Wallet wallet) {
-        if(nodeWallet == null) nodeWallet = wallet;
-        return n;
-    }
-
     public static Node getInstance() {
         if(nodeWallet == null) throw new IllegalStateException("Wallet has not been set.");
         return n;
     }
 
+    public void init(Wallet wallet) {
+        n = new Node(0, new PeerInfo(6942), wallet);
+    }
+
+    public static Wallet getNodeWallet() {
+        if(nodeWallet == null) {
+            throw new IllegalStateException("Node is not initialized, call to init(Wallet) must be made");
+        } else {
+            return nodeWallet;
+        }
+    }
+
     private record Router(Node peer) implements RouterInterface {
 
-        public PeerInfo route(String peerID) {
+        public @Nullable PeerInfo route(String peerID) {
             if(peer.getPeerKeys().contains(peerID)) {
                 return peer.getPeer(peerID);
             } else {

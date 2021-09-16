@@ -33,7 +33,8 @@ public final class StateTrie {
 		var thisUser = new AddressProperties(0, 0, StorageTrie.getUserTrie().toHash(), null);
 		AtomicInteger k = new AtomicInteger(0);
 		database.forEach(entry -> k.getAndIncrement());
-		if(k.equals(new AtomicInteger(0))) database.put(Node.nodeWallet.asBytes(), thisUser.asBytes());
+		if(Node.getNodeWallet() == null) throw new IllegalStateException("Node is not initialized, call to init(Wallet) must be made");
+		if(k.equals(new AtomicInteger(0))) database.put(Node.getNodeWallet().asBytes(), thisUser.asBytes());
 
 	}
 

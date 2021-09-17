@@ -1,14 +1,16 @@
 package some.random;
 
 import lombok.SneakyThrows;
-import net.bucketcoin.block.Transaction;
 import net.bucketcoin.crypto.Bucketcoin;
 import net.bucketcoin.message.SendBCKT;
 import net.bucketcoin.node.Miner;
 import net.bucketcoin.p2p.Node;
 import net.bucketcoin.wallet.Wallet;
 
+import java.security.Provider;
 import java.util.Objects;
+
+import static java.security.Security.*;
 
 public class BlockchainImplementation {
 
@@ -19,7 +21,8 @@ public class BlockchainImplementation {
 		//var bckt = Bucketcoin.getInstance();
 
 		var minerWallet = new Wallet();
-		Node.getInstance(minerWallet); // init
+		var n = Node.getInstance(); // init
+		n.init(minerWallet, 8080); // 8080 is a testing port
 
 		var testWallet = new Wallet();
 		var testWallet2 = new Wallet();
@@ -32,6 +35,14 @@ public class BlockchainImplementation {
 				// Miner.getInstance().mine(69420);
 			}
 		} else {
+			for(Provider s : getProviders()) {
+				for(Provider.Service service : s.getServices()) {
+					if(service.getAlgorithm().equals("EC")) {
+						System.out.println(s.getName());
+						System.out.println(s.getClass());
+					}
+				}
+			}
 			//var n = Node.getInstance();
 			var g = Bucketcoin.getInstance().getGenesis();
 			Miner.getInstance().mine(g.getNonce());

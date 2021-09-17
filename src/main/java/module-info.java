@@ -28,5 +28,6 @@ module net.bucketcoin {
     requires leveldb.api;
     requires commons.io;
     requires com.google.common;
+    requires org.bouncycastle.provider;
 
 }

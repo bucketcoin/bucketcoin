@@ -48,12 +48,12 @@ public class RequestTrade extends Message {
     }
 
     @Override
-    public void send() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException {
+    public void send() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Trade trade = new Trade(toGet, toSend, sender.publicKey.toString(), recipient.publicKey.toString(), gas_fee);
         String trade_sha256 = DigestUtils.shaHex(trade.toString());
         var c = CryptoResources.getStandardCipher();
         c.init(Cipher.ENCRYPT_MODE, sender.getPrivateKey());
-        var signature = c.doFinal(trade_sha256.getBytes(StandardCharsets.US_ASCII));
+        var signature = c.doFinal(trade_sha256.getBytes(StandardCharsets.ISO_8859_1));
         Broadcast.tradeRequest(trade, sender.publicKey, signature); // network effect
     }
 

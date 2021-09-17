@@ -1,8 +1,10 @@
 package net.bucketcoin.contract.interfaces;
 
-import net.bucketcoin.block.Blockable;
-
-public interface Contract extends Blockable {
+/**
+ * Represents a smart contract.
+ * @implNote Contracts are required to form into {@link AcceptedContract}s upon acceptance.
+ */
+public interface Contract {
 
 	/**
 	 * Execution code for the Contract implementation runs in this method.

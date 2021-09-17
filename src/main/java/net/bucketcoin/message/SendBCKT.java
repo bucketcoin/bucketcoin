@@ -2,6 +2,7 @@ package net.bucketcoin.message;
 
 import net.bucketcoin.block.Transaction;
 import net.bucketcoin.central.CryptoResources;
+import net.bucketcoin.exception.InsufficientBalanceException;
 import net.bucketcoin.node.Miner;
 import net.bucketcoin.p2p.Broadcast;
 import net.bucketcoin.wallet.Wallet;
@@ -34,12 +35,15 @@ public class SendBCKT extends Message {
     }
 
     @Override
-    public void send() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException {
+    public void send() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InsufficientBalanceException {
         Transaction transaction = new Transaction(bckt, sender.publicKey.toString(), recipient.publicKey.toString(), gas_fee);
         String transaction_sha256 = DigestUtils.shaHex(transaction.toString());
         var c = CryptoResources.getStandardCipher();
         c.init(Cipher.ENCRYPT_MODE, sender.getPrivateKey());
-        var signature = c.doFinal(transaction_sha256.getBytes(StandardCharsets.US_ASCII));
+        var signature = c.doFinal(transaction_sha256.getBytes(StandardCharsets.ISO_8859_1));
+        if(!sender.hasEnough(bckt + (gas_fee * 0.000001))) {
+            throw new InsufficientBalanceException();
+        }
         Broadcast.transaction(transaction, sender.publicKey, signature); // network effect
     }
 }

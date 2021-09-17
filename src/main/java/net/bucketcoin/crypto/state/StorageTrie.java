@@ -46,7 +46,7 @@ public class StorageTrie {
 	}
 
 	public byte[] toHash() {
-		return DigestUtils.sha(toString().getBytes(StandardCharsets.US_ASCII));
+		return DigestUtils.sha(toString().getBytes(StandardCharsets.ISO_8859_1));
 	}
 
 	public HashMap<Integer, String> getActiveContractsAsMap() {

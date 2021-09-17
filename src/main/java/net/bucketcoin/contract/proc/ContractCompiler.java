@@ -33,7 +33,7 @@ public final class ContractCompiler {
 	@SneakyThrows
 	@Contract(pure = true)
 	@SuppressWarnings("NullArgumentToVariableArgMethod")
-	public static boolean compile(File javaContractFile) {
+	public static boolean compile(File javaContractFile, boolean resolve) {
 
 		if(!verify(javaContractFile)) {
 			return false;

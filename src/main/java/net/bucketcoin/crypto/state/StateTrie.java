@@ -1,5 +1,6 @@
 package net.bucketcoin.crypto.state;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.GsonBuilder;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -11,15 +12,26 @@ import org.jetbrains.annotations.NotNull;
 import static org.iq80.leveldb.impl.Iq80DBFactory.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * This is a World State Trie where global operations are called.
+ * Wallet balances are updated here and not {@link net.bucketcoin.wallet.Wallet}.
+ */
 public final class StateTrie {
 
-	@SuppressWarnings("InstantiationOfUtilityClass")
 	private static final StateTrie adr = new StateTrie(); // This is a singleton class.
 	private static DB database;
+
+	public Map<? extends byte[], ? extends byte[]> asMap() {
+		ImmutableMap.Builder<byte[], byte[]> mapBuilder = ImmutableMap.builder();
+		while(database.iterator().hasNext()) {
+			Map.Entry<? extends byte[], ? extends byte[]> next =  database.iterator().next();
+			mapBuilder.put(next);
+		}
+		return mapBuilder.build();
+	}
 
 	public static StateTrie getInstance() {
 		return adr;
@@ -44,7 +56,7 @@ public final class StateTrie {
 
 	public static void addAccount(@NotNull String address, @NotNull AddressProperties addressProperties) {
 
-		database.put(address.getBytes(StandardCharsets.US_ASCII), addressProperties.asBytes());
+		database.put(address.getBytes(StandardCharsets.ISO_8859_1), addressProperties.asBytes());
 
 	}
 
@@ -58,7 +70,7 @@ public final class StateTrie {
 	public static record AddressProperties(int nonce, double balance, byte[] storageRoot, @Setter byte[] codeHash) {
 
 		public byte[] asBytes() {
-			return toString().getBytes(StandardCharsets.US_ASCII);
+			return toString().getBytes(StandardCharsets.ISO_8859_1);
 		}
 
 		@Override
@@ -75,7 +87,7 @@ public final class StateTrie {
 		}
 
 		public static AddressProperties fromBytes(byte[] bytes) {
-			return fromJSON(new String(bytes, StandardCharsets.US_ASCII));
+			return fromJSON(new String(bytes, StandardCharsets.ISO_8859_1));
 		}
 
 	}

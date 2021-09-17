@@ -35,6 +35,13 @@ public abstract class Event {
 		|| executor.equals(getClass())) {
 			throw new IllegalCallerException();
 		}
+		if(this.getClass().isAnnotationPresent(SelfCatchable.class)) {
+			EventHandler<? extends Event> eventHandler = EventCentral.getInstance().eventAssoc.get(this.getClass());
+			eventHandler.handle(this);
+		}
+
+		// BROADCAST EVENT
+		// TODO: 16/9/2021
 	}
 
 	/**
@@ -43,7 +50,7 @@ public abstract class Event {
 	private void init(EventHandler<? extends Event> eventHandler) {
 		EventCentral.addEventType(this);
 		var m = EventCentral.getInstance().eventAssoc;
-		m.put(eventHandler, this.getClass());
+		m.put(this.getClass(), eventHandler);
 	}
 
 }

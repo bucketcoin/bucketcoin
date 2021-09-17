@@ -1,6 +1,7 @@
 package net.bucketcoin.message;
 
 import lombok.Getter;
+import net.bucketcoin.exception.InsufficientBalanceException;
 import net.bucketcoin.wallet.Wallet;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,6 +10,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.List;
 
 public abstract class Message {
@@ -73,6 +75,8 @@ public abstract class Message {
                                        NoSuchAlgorithmException,
                                        InvalidKeyException,
                                        IllegalBlockSizeException,
-                                       BadPaddingException;
+                                       BadPaddingException,
+                                       NoSuchProviderException,
+                                       InsufficientBalanceException;
 
 }

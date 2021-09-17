@@ -42,11 +42,12 @@ public class Miner {
         Cipher c = Cipher.getInstance("RSA");
         c.init(Cipher.DECRYPT_MODE, senderPublicKey);
         final byte[] dec = c.doFinal(signature);
-        if(Arrays.equals(dec, DigestUtils.shaHex(transaction.toString()).getBytes(StandardCharsets.US_ASCII))) {
+        if(Arrays.equals(dec, DigestUtils.shaHex(transaction.toString()).getBytes(StandardCharsets.ISO_8859_1))) {
 
             var block = new Block(Bucketcoin.getInstance().getLastBlock().getHash(), new ArrayList<>() {{
                 add(transaction);
-                add(new Transaction(6, "rewards", Node.nodeWallet.getAddress(), 0));
+                if(Node.getNodeWallet() == null) throw new IllegalStateException("Node is not initialized, call to init(Wallet) must be made");
+                add(new Transaction(6, "rewards", Node.getNodeWallet().getAddress(), 0));
             }});
             this.mine(block.getNonce());
             System.out.println(new Gson().newBuilder().create().toJson(block));
@@ -62,11 +63,12 @@ public class Miner {
             Cipher c = Cipher.getInstance("RSA");
             c.init(Cipher.DECRYPT_MODE, senderPublicKey);
             final byte[] dec = c.doFinal(signature);
-            if(Arrays.equals(dec, DigestUtils.shaHex(transaction.toString()).getBytes(StandardCharsets.US_ASCII))) {
+            if(Arrays.equals(dec, DigestUtils.shaHex(transaction.toString()).getBytes(StandardCharsets.ISO_8859_1))) {
 
                 var block = new Block(Bucketcoin.getInstance().getLastBlock().getHash(), new ArrayList<>() {{
                     add(transaction);
-                    add(new Transaction(6, "rewards", Node.nodeWallet.getAddress(), 0));
+                    if(Node.getNodeWallet() == null) throw new IllegalStateException("Node is not initialized, call to init(Wallet) must be made");
+                    add(new Transaction(6, "rewards", Node.getNodeWallet().getAddress(), 0));
                 }});
                 this.mine(block.getNonce());
                 System.out.println(new Gson().newBuilder().create().toJson(block));

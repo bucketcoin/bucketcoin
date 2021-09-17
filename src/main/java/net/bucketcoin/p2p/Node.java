@@ -2,23 +2,25 @@ package net.bucketcoin.p2p;
 
 import net.bucketcoin.wallet.Wallet;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 import peerbase.*;
 
 public final class Node extends peerbase.Node {
 
-    private static Node n = null;
+    private static Node n = new Node(0, new PeerInfo(1242), null);
     private static Wallet nodeWallet = null;
     /**
      * Returns the singleton Node for the {@link Wallet} provided.
      * @return The Node instance.
+     * @apiNote If any methods called from this Node throw a {@link NullPointerException},
+     * this indicates that the {@link Node#nodeWallet} has not been set. A node must be
      */
     public static Node getInstance() {
-        if(nodeWallet == null) throw new IllegalStateException("Wallet has not been set.");
         return n;
     }
 
-    public void init(Wallet wallet) {
-        n = new Node(0, new PeerInfo(6942), wallet);
+    public void init(Wallet wallet, @Range(from = 0, to = 9999) int port) {
+        n = new Node(0, new PeerInfo(port), wallet);
     }
 
     public static Wallet getNodeWallet() {

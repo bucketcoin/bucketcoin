@@ -75,8 +75,9 @@ public final class NonFungibleToken {
 	 * 		return new String(digest.digest(), SerializationResources.getStandardCharset());}
 	 * @return The {@link String} representation of this non-fungible token.
 	 */
+	@Contract(" -> new")
 	@Override
-	public String toString() {
+	public @NotNull String toString() {
 		var detail = "NonFungibleToken{" + "identifier=" + identifier.toString() + ", file=" + convertFileToBase64() + ", minter=" + minterAddress + ", serial=" + serial.toString() + ", gen=" + generated.toString() + '}';
 		var digest =  CryptoResources.getStandardDigest();
 		digest.update(detail.getBytes(SerializationResources.getStandardCharset()));

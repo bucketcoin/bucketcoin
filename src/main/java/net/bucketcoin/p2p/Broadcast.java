@@ -25,7 +25,7 @@ public class Broadcast {
     public static final String REPLY = "REPL";
     public static final String ERROR = "ERRO";
 
-    private static final Node node = Node.getInstance(Node.nodeWallet);
+    private static final Node node = Node.getInstance();
 
     /**
      * Broadcasts a newly added block to the rest of the P2P network.

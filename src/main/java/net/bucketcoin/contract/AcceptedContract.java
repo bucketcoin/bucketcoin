@@ -1,4 +1,4 @@
-package net.bucketcoin.contract.interfaces;
+package net.bucketcoin.contract;
 
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;

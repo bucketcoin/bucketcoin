@@ -1,8 +1,8 @@
 package net.bucketcoin.crypto.token.nft;
 
 import lombok.SneakyThrows;
-import net.bucketcoin.central.CryptoResources;
-import net.bucketcoin.central.SerializationResources;
+import net.bucketcoin.util.CryptoResources;
+import net.bucketcoin.util.SerializationResources;
 import net.bucketcoin.exception.InsufficientBalanceException;
 import net.bucketcoin.wallet.Wallet;
 import org.apache.commons.io.FileUtils;

@@ -1,8 +1,7 @@
 package net.bucketcoin.message;
 
 import net.bucketcoin.block.Trade;
-import net.bucketcoin.block.Transaction;
-import net.bucketcoin.central.CryptoResources;
+import net.bucketcoin.util.CryptoResources;
 import net.bucketcoin.p2p.Broadcast;
 import net.bucketcoin.wallet.Wallet;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -15,7 +14,6 @@ import javax.crypto.NoSuchPaddingException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.util.List;
 
 public class RequestTrade extends Message {

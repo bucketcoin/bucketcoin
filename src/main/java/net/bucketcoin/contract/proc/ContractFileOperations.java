@@ -18,7 +18,7 @@ public final class ContractFileOperations {
 	private static final ArrayList<String> allowedImports = new ArrayList<>() {{
 
 		add("net.bucketcoin.contract.permitted.*");
-		add("net.bucketcoin.contract.interfaces.Contract");
+		add("net.bucketcoin.contract.Contract");
 
 	}};
 
@@ -113,7 +113,7 @@ public final class ContractFileOperations {
 				   imports will result in a failure to compile
 				   and rejection across the blockchain network. */
 				   
-				import net.bucketcoin.contract.interfaces.Contract;
+				import net.bucketcoin.contract.Contract;
 				import net.bucketcoin.contract.permitted.*;
 				    
 				public final class ContractExample implements Contract {

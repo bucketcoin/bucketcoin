@@ -1,10 +1,14 @@
-package net.bucketcoin.contract.interfaces;
+package net.bucketcoin.contract;
+
+import net.bucketcoin.block.Blockable;
 
 /**
  * Represents a smart contract.
  * @implNote Contracts are required to form into {@link AcceptedContract}s upon acceptance.
  */
-public interface Contract {
+public interface Contract extends Blockable {
+
+
 
 	/**
 	 * Execution code for the Contract implementation runs in this method.
@@ -18,4 +22,9 @@ public interface Contract {
 	 */
 	int getVersion();
 
+	/**
+	 * Returns the gas fee in 0.000001 BCKT.
+	 */
+	@Override
+	double getGasFee();
 }

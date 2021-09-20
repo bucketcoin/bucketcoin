@@ -1,9 +1,9 @@
 package some.random;
 
-import net.bucketcoin.contract.interfaces.Contract;
+import net.bucketcoin.contract.Contract;
 
 public class ContractExample implements Contract {
-	@Override
+	
 	public double getGasFee() {
 		return 1;
 	}

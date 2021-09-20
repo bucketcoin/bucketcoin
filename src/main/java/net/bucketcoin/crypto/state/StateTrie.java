@@ -64,7 +64,7 @@ public final class StateTrie {
 	 * A record representing the properties of an address.
 	 * @param nonce The number of transactions sent from the user.
 	 * @param balance The BCKT holdings of the user.
-	 * @param storageRoot The SHA-256 hash of the user's {@link StorageTrie}.
+	 * @param storageRoot The SHA-256 hash of the user's {@link StorageTrie}
 	 * @param codeHash Code hash.
 	 */
 	public static record AddressProperties(int nonce, double balance, byte[] storageRoot, @Setter byte[] codeHash) {

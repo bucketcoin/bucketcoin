@@ -1,9 +1,7 @@
-package net.bucketcoin.central;
+package net.bucketcoin.util;
 
 import lombok.SneakyThrows;
 import net.bucketcoin.wallet.Wallet;
-import org.bouncycastle.crypto.KeyGenerationParameters;
-import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
 import org.bouncycastle.jcajce.provider.digest.SHA256;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jetbrains.annotations.Contract;
@@ -25,6 +23,7 @@ public final class CryptoResources {
 
 	public static final int KEY_SIZE = 512;
 	public static final String HASH_ALGORITHM = "SHA-256";
+	public static final String ALGORITHM = "";
 
 	public enum AlgorithmType {
 
@@ -32,10 +31,6 @@ public final class CryptoResources {
 		EC
 
 	}
-
-	private static final ECKeyPairGenerator ecKeyPairGenerator = new ECKeyPairGenerator() {{
-		init(new KeyGenerationParameters(new SecureRandom(), KEY_SIZE));
-	}};
 
 	private static final SHA256.KeyGenerator sha256KeyGenerator = new SHA256.KeyGenerator() {{
 		engineInit(KEY_SIZE, new SecureRandom());
@@ -55,7 +50,7 @@ public final class CryptoResources {
 	 */
 	@SneakyThrows
 	public static @NotNull KeyGenerator getStandardSymmetricKeyGenerator() {
-		var k = KeyGenerator.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
+		var k = KeyGenerator.getInstance("EC");
 		k.init(KEY_SIZE);
 		return k;
 	}
@@ -65,8 +60,12 @@ public final class CryptoResources {
 		return MessageDigest.getInstance(HASH_ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
 	}
 
-	public static ECKeyPairGenerator getStandardKeyPairGenerator() {
-		return ecKeyPairGenerator;
+	// public static ECKeyPairGenerator getStandardKeyPairGenerator() {
+	//	return ecKeyPairGenerator;
+	//}
+
+	public static KeyPairGenerator getStandardKeyPairGenerator() throws NoSuchAlgorithmException {
+		return KeyPairGenerator.getInstance("EC");
 	}
 
 

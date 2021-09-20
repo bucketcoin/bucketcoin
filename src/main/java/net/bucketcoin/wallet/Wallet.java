@@ -1,7 +1,7 @@
 package net.bucketcoin.wallet;
 
 import lombok.SneakyThrows;
-import net.bucketcoin.central.CryptoResources;
+import net.bucketcoin.util.CryptoResources;
 import net.bucketcoin.crypto.state.StateTrie;
 import net.bucketcoin.message.Message;
 import org.apache.commons.codec.digest.DigestUtils;

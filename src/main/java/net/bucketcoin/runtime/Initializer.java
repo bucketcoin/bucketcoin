@@ -2,6 +2,7 @@ package net.bucketcoin.runtime;
 
 import lombok.Getter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 
 import java.security.Security;
 
@@ -16,7 +17,7 @@ public class Initializer {
 
 	private static final Initializer init = new Initializer();
 	@Getter
-	private static boolean hasInitialized = false;
+	private static boolean initialized = false;
 
 	private Initializer() {
 		//no instance
@@ -30,12 +31,13 @@ public class Initializer {
 	 * Initializes the core libraries of Bucketcoin.
 	 * @throws IllegalStateException if core initialization has already completed.
 	 */
+	@MustBeInvokedByOverriders
 	public final void initializeCore() throws IllegalArgumentException {
-		if(hasInitialized) throw new IllegalStateException("Bucketcoin core initialization has already completed.");
+		if(initialized) throw new IllegalStateException("Bucketcoin core initialization has already completed.");
 
 		Security.addProvider(new BouncyCastleProvider());
 
-		hasInitialized = true;
+		initialized = true;
 	}
 
 }

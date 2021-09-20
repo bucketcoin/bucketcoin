@@ -2,9 +2,7 @@ package net.bucketcoin.block;
 
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
-import net.bucketcoin.crypto.state.StateTrie;
-import net.bucketcoin.crypto.state.StorageTrie;
-import net.bucketcoin.crypto.state.TransactionTrie;
+import net.bucketcoin.collections.IBlock;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +16,7 @@ import java.util.List;
 /**
  * An instance of a block for the miner.
  */
-public class Block implements Serializable {
+public class Block implements Serializable, IBlock {
 
     @Getter
     private final int nonce = Math.round(new SecureRandom().nextInt() * 694206942);
@@ -58,4 +56,9 @@ public class Block implements Serializable {
         return DigestUtils.shaHex(b);
     }
 
+    @Override
+    public String toString() {
+        var a = new GsonBuilder().create();
+        return a.toJson(this, Block.class);
+    }
 }

@@ -1,4 +1,4 @@
-package net.bucketcoin.algorithm;
+package net.bucketcoin.pow;
 
 import lombok.Getter;
 
@@ -33,6 +33,8 @@ public class DifficultyAlgorithm {
 		if(deviation > ((int) deviation + 0.5)) {
 			x++;
 		}
+
+		difficulty = x - 4;
 
 		return x - 4;
 

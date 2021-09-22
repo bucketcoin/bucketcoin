@@ -1,6 +1,6 @@
 package net.bucketcoin.node;
 
-import static net.bucketcoin.algorithm.DifficultyAlgorithm.*;
+import static net.bucketcoin.pow.DifficultyAlgorithm.*;
 
 import com.google.gson.Gson;
 import lombok.SneakyThrows;
@@ -11,7 +11,6 @@ import net.bucketcoin.block.Transaction;
 import net.bucketcoin.p2p.Broadcast;
 import net.bucketcoin.p2p.Node;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 

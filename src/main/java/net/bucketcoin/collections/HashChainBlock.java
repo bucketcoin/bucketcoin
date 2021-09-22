@@ -16,9 +16,8 @@ import java.util.Objects;
 /**
  * This class represents a 'block' in cryptography.
  * The hashes of this block are <i>"encrypted"</i>.
- * @param <E> The type to store.
  */
-public class HashChainBlock<E> implements IBlock {
+public class HashChainBlock implements IBlock {
 
 	@Getter
 	private final String hash;
@@ -26,7 +25,8 @@ public class HashChainBlock<E> implements IBlock {
 	private final String prevHash;
 	@Getter
 	private final String prevHash2;
-	protected final E data;
+	@Getter
+	protected final Object data;
 
 	/**
 	 * If a {@link HashChain} has no blocks yet, this class is to be used.
@@ -34,23 +34,18 @@ public class HashChainBlock<E> implements IBlock {
 	 * IllegalAccessException}, as this block is intended to be unmodified.
 	 * @param <S> The type to use upon block creation.
 	 */
-	public static final class NullHashChainBlock<S> extends HashChainBlock<S> {
+	public static final class NullHashChainBlock<S> extends HashChainBlock {
 
-		private final String nhash;
+		private final String nHash;
 
-		@Contract(" -> new")
-		public static <T> @NotNull NullHashChainBlock<T> getInstance() {
-			return new NullHashChainBlock<>();
-		}
-
-		private NullHashChainBlock() {
+		public NullHashChainBlock() {
 			super("", "", "");
-			nhash = this.calculateHash();
+			nHash = this.calculateHash();
 		}
 
 		@Override
 		public String getHash() {
-			return nhash;
+			return nHash;
 		}
 	}
 
@@ -70,7 +65,7 @@ public class HashChainBlock<E> implements IBlock {
 	 * Creates a new 'block' from the previous block.
 	 * @param prevBlock The previous block.
 	 */
-	public HashChainBlock(@NotNull HashChainBlock<E> prevBlock, E data) {
+	public HashChainBlock(@NotNull HashChainBlock prevBlock, @NotNull Object data) {
 		this.data = data;
 		this.prevHash = prevBlock.getHash();
 
@@ -94,17 +89,20 @@ public class HashChainBlock<E> implements IBlock {
 	protected @NotNull String calculateHash() {
 
 		var p = this.prevHash.getBytes(getStandardCharset());
-		var p2 = this.prevHash2.getBytes(getStandardCharset());
+		byte[] p2 = null;
+		if(!(prevHash2 == null)) p2 = this.prevHash2.getBytes(getStandardCharset());
 		byte[] c, k;
 		var i = Objects.hash(this, this.toJson(), this.data);
 		var digest = CryptoResources.getStandardDigest();
 		c = DigestUtils.sha(String.valueOf(i));
 
-		byte[] allByteArray = new byte[p.length + c.length + p2.length];
+		byte[] allByteArray;
+		if(p2 != null) allByteArray = new byte[p.length + c.length + p2.length]; else
+			 allByteArray = new byte[p.length + c.length];
 		ByteBuffer buff = ByteBuffer.wrap(allByteArray);
 		buff.put(p);
 		buff.put(c);
-		buff.put(p2);
+		if(p2 != null) buff.put(p2);
 		k = buff.array();
 		buff.clear();
 

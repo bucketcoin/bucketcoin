@@ -9,7 +9,7 @@ import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static net.bucketcoin.algorithm.DifficultyAlgorithm.calculateDifficulty;
+import static net.bucketcoin.pow.DifficultyAlgorithm.calculateDifficulty;
 
 /**
  * The Bucketcoin blockchain class.

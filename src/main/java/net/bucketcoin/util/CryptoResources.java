@@ -50,7 +50,7 @@ public final class CryptoResources {
 	 */
 	@SneakyThrows
 	public static @NotNull KeyGenerator getStandardSymmetricKeyGenerator() {
-		var k = KeyGenerator.getInstance("EC");
+		var k = KeyGenerator.getInstance("AES", BouncyCastleProvider.PROVIDER_NAME);
 		k.init(KEY_SIZE);
 		return k;
 	}
@@ -64,8 +64,14 @@ public final class CryptoResources {
 	//	return ecKeyPairGenerator;
 	//}
 
-	public static KeyPairGenerator getStandardKeyPairGenerator() throws NoSuchAlgorithmException {
-		return KeyPairGenerator.getInstance("EC");
+	@SneakyThrows
+	public static KeyPairGenerator getStandardKeyPairGenerator() {
+		return KeyPairGenerator.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
+	}
+
+	@Contract(" -> new")
+	public static @NotNull SecureRandom getRNG() {
+		return new SecureRandom();
 	}
 
 

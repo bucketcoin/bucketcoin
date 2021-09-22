@@ -16,15 +16,15 @@ import java.util.*;
  * This class implements {@link Chain}, which uses the FIFO approach.
  * @param <E> The type to store.
  */
-@SuppressWarnings("ConstantConditions")
 public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 																   Cloneable,
 																   Serializable,
-																   RandomAccess {
+																   Trimmable<HashChain<E>>{
 
+	private final boolean initWithNullBlock;
 	private int modded = 0;
 	private final int arrayIncrement;
-	private Object[] data;
+	private HashChainBlock[] data;
 	private int count = 0;
 
 	/**
@@ -32,6 +32,10 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 * @param increment How much the backing array used by this class
 	 *                  should be increased in the event of no available
 	 *                  slots to place an added element into.
+	 *
+	 * @throws IllegalArgumentException if <code>increment < 0</code> or <code>capacity < 1</code>.
+	 *
+	 * @apiNote This class is immediately initialized with a {@link HashChainBlock.NullHashChainBlock}.
 	 */
 	public HashChain(int increment) {
 		this(increment, 50);
@@ -44,16 +48,44 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 * 					slots to place an added element into.
 	 *
 	 * @param capacity How many elements that the backing array can store.
+	 * @throws IllegalArgumentException if <code>increment < 0</code> or <code>capacity < 1</code>.
+	 *
+	 * @apiNote This class is immediately initialized with a {@link HashChainBlock.NullHashChainBlock}.
 	 */
 	public HashChain(int increment, int capacity) {
 
-		this.arrayIncrement = increment;
-		this.data = new HashChainBlock[capacity];
+		this(increment, capacity, true);
 
 	}
 
 	/**
+	 * Constructs a HashChain with the specified capacity and increment.
+	 * @param increment How much the backing array used by this class
+	 *					should be increased in the event of no available
+	 * 					slots to place an added element into.
+	 *
+	 * @param capacity How many elements that the backing array can store.
+	 * @param initWithNullBlock Whether the chain should be initialized with a null block.
+	 * @throws IllegalArgumentException if <code>increment < 0</code> or <code>capacity < 1</code>.
+	 */
+	public HashChain(int increment, int capacity, boolean initWithNullBlock) {
+		this.initWithNullBlock = initWithNullBlock;
+
+		if(increment < 0 || capacity < 1) throw new IllegalArgumentException();
+
+		this.arrayIncrement = increment;
+		this.data = new HashChainBlock[capacity + 1];
+
+		if(initWithNullBlock)
+			this.add(new HashChainBlock.NullHashChainBlock<E>(), data, 0);
+
+	}
+
+
+
+	/**
 	 * Constructs a HashChain with a capacity of 50 elements and an increment of 1.
+	 * @apiNote This class is immediately initialized with a {@link HashChainBlock.NullHashChainBlock}.
 	 */
 	public HashChain() {
 		this(1, 50);
@@ -81,25 +113,39 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 
 	}
 
-	private void add(HashChainBlock<E> e, Object @NotNull [] eData, int i) {
+	/**
+	 * This is a helper method to add a {@link HashChainBlock}.
+	 * @param e The element to add.
+	 * @param eData The data array to add to.
+	 * @param i The index to add the element to.
+	 */
+	private void add(HashChainBlock e, Object @NotNull [] eData, int i) {
 
 		if(i == eData.length) grow();
-		data[i + 1] = e;
+		data[i] = e;
 		count = i + 1;
 
 	}
 
-	@Contract("_ -> new")
-	private @NotNull HashChainBlock<E> toBlock(E e) {
+	/**
+	 * @implNote This operation is not supported in a chain.
+	 */
+	@Override
+	@Deprecated
+	public final boolean addAll(@NotNull Collection<? extends E> c) {
+		throw new UnsupportedOperationException();
+	}
 
-		return new HashChainBlock<>(getPreviousBlock(), e);
+	@Contract("_ -> new")
+	private @NotNull HashChainBlock toBlock(E e) {
+
+		return new HashChainBlock(getPreviousBlock(), e);
 
 	}
 
-	@SuppressWarnings("unchecked")
-	private HashChainBlock<E> getPreviousBlock() {
+	private HashChainBlock getPreviousBlock() {
 
-		return (HashChainBlock<E>) data[count - 1];
+		return data[count - 1];
 
 	}
 
@@ -111,7 +157,7 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	public boolean contains(Object o) {
 		try {
 			var k = getIndex((E) o);
-			var willThrowExceptionIfNotContained = k < 0; // confirmed to be false, try to cause ClassCastException
+			var willThrowExceptionIfNotContained = (k - 1) < 0; // confirmed to be false, try to cause ClassCastException
 			if(willThrowExceptionIfNotContained) throw new InternalError("how is an array element's index negative?");
 		} catch(NoSuchElementException | ClassCastException exception) {
 			return false;
@@ -132,25 +178,26 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	@SuppressWarnings("unchecked")
 	public final boolean validate() {
 
-		for(Object o : data) {
+		for(HashChainBlock o : data) {
 
-			HashChainBlock<E> datum = (HashChainBlock<E>) o;
-			int index = getIndex(datum.data);
+			if(o == null) break;
 
-			if(!datum.inheritsHashFromNullBlock()) { // ignore 2nd prevHash if it inherits a hash from a NullHashChainBlock.
-				if(!datum.getPrevHash2().equals(
-						((HashChainBlock<E>) data[index - 2]).getHash()
+			int index = getIndex((E) o.data);
+
+			if(!o.inheritsHashFromNullBlock()) { // ignore 2nd prevHash if it inherits a hash from a NullHashChainBlock.
+				if(!o.getPrevHash2().equals(
+						data[index - 2].getHash()
 				)
 				||
-				!datum.getPrevHash2().equals(
-						((HashChainBlock<E>) data[index - 1]).getPrevHash()
+				!o.getPrevHash2().equals(
+						data[index - 1].getPrevHash()
 				)
 				) return false;
+			} else if(index != 0) {
+				if(!o.getPrevHash().equals(
+						data[index - 1].getHash()
+				)) return false;
 			}
-
-			if(!datum.getPrevHash().equals(
-					((HashChainBlock<E>) data[index - 1]).getHash()
-			)) return false;
 
 		}
 
@@ -165,14 +212,12 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 * @throws NoSuchElementException if no such {@link E} exists
 	 * in the chain.
 	 */
-	@SuppressWarnings("unchecked")
-	public int getIndex(@NotNull E e) throws NoSuchElementException {
+	public int getIndex(E e) throws NoSuchElementException {
 
 		int k = 0;
 
-		for(Object o : data) {
-			var o2 = (HashChainBlock<E>) o;
-			if(o2.data == e) return k;
+		for(HashChainBlock o : data) {
+			if(o.data == e) return k;
 			k++;
 		}
 		return -1;
@@ -191,7 +236,7 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 		var e = data[c];
 		data[c] = null;
 		count--;
-		return ((HashChainBlock<E>) e).data;
+		return (E) e.data;
 
 	}
 
@@ -214,7 +259,7 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	@SuppressWarnings("unchecked")
 	public E getFirst() {
 		if(count == 0) throw new IllegalStateException();
-		return ((HashChainBlock<E>) data[count]).data;
+		return (E) data[count].data;
 	}
 
 	/**
@@ -240,12 +285,21 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 */
 	private synchronized void grow() {
 
-		Object[] blocks;
-		blocks = new Object[data.length + arrayIncrement];
+		HashChainBlock[] blocks;
+		blocks = new HashChainBlock[data.length + arrayIncrement];
 		System.arraycopy(data, 0, blocks, 0, data.length);
 		this.data = blocks;
 		modded++;
 
+	}
+
+	public synchronized boolean add(E e) {
+		try {
+			this.addFirst(e);
+			return true;
+		} catch(Exception ignore) {
+			return false;
+		}
 	}
 
 	@Override
@@ -271,5 +325,48 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 
 		}
 
+	}
+
+	/**
+	 * Returns this chain represented by an array.
+	 * Since the time complexity of this method is <code>O(n)</code>,
+	 * it is best to {@link #trim(int, boolean)} this chain if it is large.
+	 * @return The chain represented by an array.
+	 */
+	@SuppressWarnings("unchecked")
+	public E[] toArray() {
+
+		var b = toBlockArray();
+		var a = new Object[count];
+
+		for(int i = 0; i <= count; i++) {
+			HashChainBlock block = b[i];
+			var d = block.data;
+			a[i] = d;
+		}
+
+		return (E[]) a;
+
+	}
+
+	/**
+	 * Returns this chain converted to an array in its original form,
+	 * except the array capacity is the number of elements in this chain.
+	 * This method is not recommended as the returned array may contain null elements.
+	 * @return The chain represented by an array.
+	 */
+	public HashChainBlock[] toBlockArray() {
+
+		return data;
+
+	}
+
+	public boolean isInitWithNullBlock() {
+		return initWithNullBlock;
+	}
+
+	@Override
+	public HashChain<E> trim(int index, boolean reduceCapacity) {
+		return null;
 	}
 }

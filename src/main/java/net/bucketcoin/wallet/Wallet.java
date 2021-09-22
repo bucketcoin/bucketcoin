@@ -18,9 +18,7 @@ public final class Wallet {
 
     @SneakyThrows
     public Wallet() throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
-        KeyPairGenerator k = KeyPairGenerator.getInstance(CryptoResources.getStandardCipher().getAlgorithm());
-        // k.initialize(new ECGenParameterSpec("secp256r1"), new SecureRandom());
-        k.initialize(2048);
+        KeyPairGenerator k = CryptoResources.getStandardKeyPairGenerator();
         KeyPair keyPair = k.generateKeyPair();
         publicKey = keyPair.getPublic();
         privateKey = keyPair.getPrivate();

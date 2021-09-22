@@ -88,7 +88,7 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 * @apiNote This class is immediately initialized with a {@link HashChainBlock.NullHashChainBlock}.
 	 */
 	public HashChain() {
-		this(1, 50);
+		this(1);
 	}
 
 	/**
@@ -365,8 +365,27 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 		return initWithNullBlock;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public HashChain<E> trim(int index, boolean reduceCapacity) {
-		return null;
+
+		HashChain<E> h = reduceCapacity
+				? new HashChain<>(arrayIncrement, count, false)
+				: new HashChain<>(arrayIncrement, data.length, false);
+		h.data[0] = this.data[index];
+		int e = 1;
+		for(int i = index + 1; i < data.length; i++) {
+			HashChainBlock datum = data[i];
+			if(datum == null && reduceCapacity) {
+				break;
+			}
+			h.data[e] = datum;
+			e++;
+		}
+
+		return h;
+
 	}
 }

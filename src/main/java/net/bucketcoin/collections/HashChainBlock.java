@@ -6,16 +6,20 @@ import net.bucketcoin.util.CryptoResources;
 import static net.bucketcoin.util.SerializationResources.*;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.SerializationException;
+import org.apache.commons.lang3.SerializationUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
 /**
  * This class represents a 'block' in cryptography.
- * The hashes of this block are <i>"encrypted"</i>.
+ * In order to use {@link #asBytes()} it is mandatory
+ * to implement {@link Serializable}.
  */
 public class HashChainBlock implements IBlock {
 
@@ -32,9 +36,8 @@ public class HashChainBlock implements IBlock {
 	 * If a {@link HashChain} has no blocks yet, this class is to be used.
 	 * @apiNote Trying to perform operations on this (null) block will throw an {@link
 	 * IllegalAccessException}, as this block is intended to be unmodified.
-	 * @param <S> The type to use upon block creation.
 	 */
-	public static final class NullHashChainBlock<S> extends HashChainBlock {
+	public static final class NullHashChainBlock extends HashChainBlock {
 
 		private final String nHash;
 
@@ -108,7 +111,48 @@ public class HashChainBlock implements IBlock {
 
 		digest.update(k);
 		var f = digest.digest();
-		return new String(f, getStandardCharset());
+		return String.valueOf(getStandardCharset().decode(ByteBuffer.wrap(f)));
+
+	}
+
+	@Contract("-> new")
+	public final byte @NotNull [] asBytes() {
+
+		var h = hash;
+		var p = this.prevHash.getBytes(getStandardCharset());
+		byte[] p2 = null;
+		if(!(prevHash2 == null)) p2 = this.prevHash2.getBytes(getStandardCharset());
+
+		byte[] s1;
+		try {
+			s1 = SerializationUtils.serialize((Serializable) data);
+		} catch(SerializationException s) {
+			throw new IllegalStateException("Generic type parameter does not extend Serializable.");
+		}
+
+		byte[] b;
+		if(p2 != null) {
+			b = new byte[p.length +
+					s1.length +
+					p2.length +
+					h.getBytes(getStandardCharset()).length];
+		} else {
+			b = new byte[p.length +
+					s1.length +
+					h.getBytes(getStandardCharset()).length];
+		}
+		ByteBuffer buff = ByteBuffer.wrap(b);
+		buff.put(p);
+		buff.put(s1);
+		buff.put(h.getBytes(getStandardCharset()));
+		if(p2 != null) buff.put(p2);
+		return buff.array();
+
+	}
+
+	public static HashChainBlock fromBytes(byte[] bytes) {
+
+		return SerializationUtils.deserialize(bytes);
 
 	}
 

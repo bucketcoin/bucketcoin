@@ -65,7 +65,8 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 * 					slots to place an added element into.
 	 *
 	 * @param capacity How many elements that the backing array can store.
-	 * @param initWithNullBlock Whether the chain should be initialized with a null block.
+	 * @param initWithNullBlock Whether the chain should be initialized with a null block. While this will affect
+	 *                          the number of elements, it will not affect the backing array's capacity.
 	 * @throws IllegalArgumentException if <code>increment < 0</code> or <code>capacity < 1</code>.
 	 */
 	public HashChain(int increment, int capacity, boolean initWithNullBlock) {
@@ -74,11 +75,11 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 		if(increment < 0 || capacity < 1) throw new IllegalArgumentException();
 
 		this.arrayIncrement = increment;
-		this.data = new HashChainBlock[capacity + 1];
 
-		if(initWithNullBlock)
-			this.add(new HashChainBlock.NullHashChainBlock<E>(), data, 0);
-
+		if(initWithNullBlock) {
+			this.data = new HashChainBlock[capacity + 1];
+			this.add(new HashChainBlock.NullHashChainBlock(), data, 0);
+		} else this.data = new HashChainBlock[capacity];
 	}
 
 
@@ -97,9 +98,8 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 * @return an iterator over the elements contained in this collection
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public Iterator<E> iterator() {
-		return (Iterator<E>) Arrays.stream(data).iterator();
+		return Arrays.asList(this.toArray()).iterator();
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	public void addFirst(E e) {
 
 		var b = toBlock(e);
-		add(b, data, data.length);
+		add(b, data, count);
 
 	}
 
@@ -121,6 +121,7 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 */
 	private void add(HashChainBlock e, Object @NotNull [] eData, int i) {
 
+		System.out.println("test");
 		if(i == eData.length) grow();
 		data[i] = e;
 		count = i + 1;
@@ -175,29 +176,31 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 * 2.
 	 * @return Whether the chain is valid.
 	 */
-	@SuppressWarnings("unchecked")
-	public final boolean validate() {
+	public final synchronized boolean validate() {
+
+		int index = 0;
+
+		var k = data;
 
 		for(HashChainBlock o : data) {
 
-			if(o == null) break;
+			if(o != null) {
 
-			int index = getIndex((E) o.data);
+				if(!o.inheritsHashFromNullBlock()) { // ignore 2nd prevHash if it inherits a hash from a NullHashChainBlock.
 
-			if(!o.inheritsHashFromNullBlock()) { // ignore 2nd prevHash if it inherits a hash from a NullHashChainBlock.
-				if(!o.getPrevHash2().equals(
-						data[index - 2].getHash()
-				)
-				||
-				!o.getPrevHash2().equals(
-						data[index - 1].getPrevHash()
-				)
-				) return false;
-			} else if(index != 0) {
-				if(!o.getPrevHash().equals(
-						data[index - 1].getHash()
-				)) return false;
+					if(!o.getPrevHash2().equals(
+							k[index - 2].getHash()
+					)) return false;
+				} else if(index != 0) {
+					if(!o.getPrevHash().equals(
+							k[index - 1].getHash()
+					)) return false;
+				}
 			}
+
+			index++;
+
+
 
 		}
 
@@ -217,11 +220,24 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 		int k = 0;
 
 		for(HashChainBlock o : data) {
+			if(o == null) continue;
 			if(o.data == e) return k;
 			k++;
 		}
 		return -1;
 
+	}
+
+	private int getIndex(HashChainBlock hashChainBlock) throws NoSuchElementException {
+
+		int k = 0;
+
+		for(HashChainBlock o : data) {
+			if(o == null) continue;
+			if(o == hashChainBlock) return k;
+			k++;
+		}
+		return -1;
 	}
 
 	/**
@@ -285,8 +301,7 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 */
 	private synchronized void grow() {
 
-		HashChainBlock[] blocks;
-		blocks = new HashChainBlock[data.length + arrayIncrement];
+		HashChainBlock[] blocks = new HashChainBlock[data.length + arrayIncrement];
 		System.arraycopy(data, 0, blocks, 0, data.length);
 		this.data = blocks;
 		modded++;

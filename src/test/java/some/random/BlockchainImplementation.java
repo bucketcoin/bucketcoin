@@ -7,8 +7,10 @@ import net.bucketcoin.crypto.Bucketcoin;
 import net.bucketcoin.node.Miner;
 import net.bucketcoin.p2p.Node;
 import net.bucketcoin.runtime.Initializer;
+import net.bucketcoin.util.HashChains;
 import net.bucketcoin.wallet.Wallet;
 
+import java.io.File;
 import java.util.Objects;
 
 public class BlockchainImplementation {
@@ -45,7 +47,7 @@ public class BlockchainImplementation {
 			stringChain.addFirst("6");
 			stringChain.addFirst("7");
 
-			System.out.println(stringChain.validate() + "\n");
+			// System.out.println(stringChain.validate() + "\n");
 			int k = 0;
 			System.out.println("-------------------------------------------------------");
 			for(HashChainBlock block : stringChain.toBlockArray()) {
@@ -56,7 +58,7 @@ public class BlockchainImplementation {
 					if(!block.getPrevHash().equals("")) a = block.getPrevHash();
 					if(!block.getPrevHash2().equals("")) b = block.getPrevHash2();
 					System.out.println("BLOCK NUMBER " + k);
-					// System.out.println("CONTENT " + b.getData().toString());
+					// System.out.println("CONTENT " + block.getData().toString());
 					System.out.println("HASH -> " + block.getHash());
 					System.out.println("PREVIOUS HASH -> " + a);
 					System.out.println("SECOND PREVIOUS HASH ->  " + b);
@@ -64,6 +66,9 @@ public class BlockchainImplementation {
 				k++; }
 
 			}
+
+			HashChains.storeChain(stringChain, new File("ChangChang.txt"), false);
+
 			//var n = Node.getInstance();
 			// var g = Bucketcoin.getInstance().getGenesis();
 			// Miner.getInstance().mine(g.getNonce());

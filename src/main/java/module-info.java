@@ -20,6 +20,7 @@ module net.bucketcoin {
     requires java.sql;
     requires com.google.gson;
     requires commons.codec;
+    requires org.apache.commons.lang3;
     requires org.apache.commons.text;
     requires com.sun.jna;
     requires java.compiler;

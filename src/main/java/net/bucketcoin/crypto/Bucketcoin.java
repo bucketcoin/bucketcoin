@@ -17,6 +17,8 @@ import static net.bucketcoin.pow.DifficultyAlgorithm.calculateDifficulty;
 public final class Bucketcoin {
 
     public static final int BSCIVersion = 1;
+    public static final int BucketcoinVersion = 1;
+
     private static final Block genesis = new Block("", new ArrayList<>(){{
 
         add(new Transaction(170, "spy", "yps", 3));

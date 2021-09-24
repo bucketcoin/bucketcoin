@@ -1,5 +1,6 @@
 package net.bucketcoin.collections;
 
+import lombok.Getter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,18 +14,18 @@ import java.util.*;
  * Each element added will be converted to a {@link HashChainBlock} and
  * appended to the array {@link #data}.<br><br>
  *
- * This class implements {@link Chain}, which uses the FIFO approach.
+ * This class is similar to a {@link Queue}, which uses the FIFO approach.
  * @param <E> The type to store.
  */
-public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
-																   Cloneable,
-																   Serializable,
-																   Trimmable<HashChain<E>>{
+public class HashChain<E> implements
+						  Cloneable,
+						  Serializable,
+						  Trimmable<HashChain<E>> {
 
 	private final boolean initWithNullBlock;
-	private int modded = 0;
+	@Getter private int structuralModificationCount = 0;
 	private final int arrayIncrement;
-	private HashChainBlock[] data;
+	protected HashChainBlock[] data;
 	private int count = 0;
 
 	/**
@@ -39,6 +40,11 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 */
 	public HashChain(int increment) {
 		this(increment, 50);
+	}
+
+	protected void setModCount(int mc) {
+		if(mc < 0) throw new IllegalArgumentException();
+		this.structuralModificationCount = mc;
 	}
 
 	/**
@@ -57,6 +63,8 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 		this(increment, capacity, true);
 
 	}
+
+	public int getArrayCapacity() { return data.length; }
 
 	/**
 	 * Constructs a HashChain with the specified capacity and increment.
@@ -92,21 +100,7 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 		this(1);
 	}
 
-	/**
-	 * Returns an iterator over the elements contained in this collection.
-	 *
-	 * @return an iterator over the elements contained in this collection
-	 */
-	@Override
-	public Iterator<E> iterator() {
-		return Arrays.asList(this.toArray()).iterator();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void addFirst(E e) {
+	public void addFirst(@NotNull E e) {
 
 		var b = toBlock(e);
 		add(b, data, count);
@@ -119,7 +113,7 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 	 * @param eData The data array to add to.
 	 * @param i The index to add the element to.
 	 */
-	private void add(HashChainBlock e, Object @NotNull [] eData, int i) {
+	protected void add(@NotNull HashChainBlock e, Object @NotNull [] eData, int i) {
 
 		System.out.println("test");
 		if(i == eData.length) grow();
@@ -128,14 +122,6 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 
 	}
 
-	/**
-	 * @implNote This operation is not supported in a chain.
-	 */
-	@Override
-	@Deprecated
-	public final boolean addAll(@NotNull Collection<? extends E> c) {
-		throw new UnsupportedOperationException();
-	}
 
 	@Contract("_ -> new")
 	private @NotNull HashChainBlock toBlock(E e) {
@@ -150,10 +136,6 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	@SuppressWarnings("unchecked")
 	public boolean contains(Object o) {
 		try {
@@ -240,10 +222,10 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 		return -1;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
+	public boolean remove(Object o) {
+		return this.removeFirst() != null;
+	}
+
 	@SuppressWarnings("unchecked")
 	public E removeFirst() {
 
@@ -256,10 +238,6 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public E pollFirst() {
 		try {
 			return removeFirst();
@@ -268,20 +246,12 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	@SuppressWarnings("unchecked")
 	public E getFirst() {
 		if(count == 0) throw new IllegalStateException();
 		return (E) data[count].data;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public E peekFirst() {
 		try {
 			return getFirst();
@@ -304,11 +274,11 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 		HashChainBlock[] blocks = new HashChainBlock[data.length + arrayIncrement];
 		System.arraycopy(data, 0, blocks, 0, data.length);
 		this.data = blocks;
-		modded++;
+		structuralModificationCount++;
 
 	}
 
-	public synchronized boolean add(E e) {
+	public synchronized boolean add(@NotNull E e) {
 		try {
 			this.addFirst(e);
 			return true;
@@ -317,10 +287,11 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 		}
 	}
 
-	@Override
 	public int size() {
 		return count;
 	}
+
+	public int increment() { return arrayIncrement; }
 
 	@SuppressWarnings({"MethodDoesntCallSuperMethod", "unchecked"})
 	public HashChain<E> clone() {
@@ -331,7 +302,7 @@ public class HashChain<E> extends AbstractCollection<E> implements Chain<E>,
 			Object[] blocks;
 			blocks = clone.data;
 			System.arraycopy(data, 0, blocks, 0, data.length);
-			clone.modded = 0;
+			clone.structuralModificationCount = 0;
 			return (HashChain<E>) clone;
 
 		} catch(ClassCastException ignore) {

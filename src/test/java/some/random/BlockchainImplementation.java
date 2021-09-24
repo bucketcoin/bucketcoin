@@ -3,11 +3,9 @@ package some.random;
 import lombok.SneakyThrows;
 import net.bucketcoin.collections.HashChain;
 import net.bucketcoin.collections.HashChainBlock;
-import net.bucketcoin.crypto.Bucketcoin;
-import net.bucketcoin.node.Miner;
 import net.bucketcoin.p2p.Node;
 import net.bucketcoin.runtime.Initializer;
-import net.bucketcoin.util.HashChains;
+import net.bucketcoin.collections.HashChains;
 import net.bucketcoin.wallet.Wallet;
 
 import java.io.File;

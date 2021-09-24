@@ -21,7 +21,7 @@ import java.util.Objects;
  * In order to use {@link #asBytes()} it is mandatory
  * to implement {@link Serializable}.
  */
-public class HashChainBlock implements IBlock {
+public class HashChainBlock implements IBlock, Serializable {
 
 	@Getter
 	private final String hash;

@@ -34,8 +34,6 @@ import java.util.Objects;
 
 /**
  * This class represents a 'block' in cryptography.
- * In order to use {@link #asBytes()} it is mandatory
- * to implement {@link Serializable}.
  */
 public class HashChainBlock implements IBlock, Serializable {
 
@@ -134,35 +132,7 @@ public class HashChainBlock implements IBlock, Serializable {
 	@Contract("-> new")
 	public final byte @NotNull [] asBytes() {
 
-		var h = hash;
-		var p = this.prevHash.getBytes(getStandardCharset());
-		byte[] p2 = null;
-		if(!(prevHash2 == null)) p2 = this.prevHash2.getBytes(getStandardCharset());
-
-		byte[] s1;
-		try {
-			s1 = SerializationUtils.serialize((Serializable) data);
-		} catch(SerializationException s) {
-			throw new IllegalStateException("Generic type parameter does not extend Serializable.");
-		}
-
-		byte[] b;
-		if(p2 != null) {
-			b = new byte[p.length +
-					s1.length +
-					p2.length +
-					h.getBytes(getStandardCharset()).length];
-		} else {
-			b = new byte[p.length +
-					s1.length +
-					h.getBytes(getStandardCharset()).length];
-		}
-		ByteBuffer buff = ByteBuffer.wrap(b);
-		buff.put(p);
-		buff.put(s1);
-		buff.put(h.getBytes(getStandardCharset()));
-		if(p2 != null) buff.put(p2);
-		return buff.array();
+		return SerializationUtils.serialize(this);
 
 	}
 

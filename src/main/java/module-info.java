@@ -1,3 +1,7 @@
+/**
+ * The Bucketcoin module. Can be used to
+ * create a client Node.
+ */
 module net.bucketcoin {
 
     exports net.bucketcoin.node;
@@ -8,11 +12,14 @@ module net.bucketcoin {
     exports net.bucketcoin.exception;
     exports net.bucketcoin.runtime.exception;
     exports net.bucketcoin.runtime.event;
+    exports net.bucketcoin.runtime.event.events;
     exports net.bucketcoin.collections;
     exports net.bucketcoin.util;
+    exports net.bucketcoin.networking;
 
     opens net.bucketcoin.block to com.google.gson;
     opens net.bucketcoin.message to com.google.gson;
+    opens net.bucketcoin.networking to com.google.gson;
 
     requires lombok;
     requires org.jetbrains.annotations;
@@ -32,5 +39,6 @@ module net.bucketcoin {
     requires commons.io;
     requires com.google.common;
     requires org.bouncycastle.provider;
+    requires io.netty.all;
 
 }

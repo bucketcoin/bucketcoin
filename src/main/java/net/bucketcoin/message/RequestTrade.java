@@ -35,7 +35,7 @@ import java.util.List;
 public class RequestTrade extends Message {
 
 
-    private Wallet sender;
+    private final Wallet sender;
     private final Wallet recipient;
     private final List<?> toSend;
     private final List<?> toGet;
@@ -52,7 +52,7 @@ public class RequestTrade extends Message {
      */
     public RequestTrade(@NotNull Wallet sender, @NotNull Wallet recipient, List<?> toSend, List<?> toGet, double gas_fee) {
 
-        super(sender, recipient, toSend, toGet, gas_fee);
+        super(recipient, toSend, toGet, gas_fee);
 
         this.sender = sender;
         this.recipient = recipient;
@@ -62,13 +62,13 @@ public class RequestTrade extends Message {
     }
 
     @Override
-    public void send() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-        Trade trade = new Trade(toGet, toSend, sender.publicKey.toString(), recipient.publicKey.toString(), gas_fee);
+    public void send(@NotNull Wallet sender) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        Trade trade = new Trade(toGet, toSend, sender.getPublicKey().toString(), recipient.getPublicKey().toString(), gas_fee);
         String trade_sha256 = DigestUtils.shaHex(trade.toString());
         var c = CryptoResources.getStandardCipher();
         c.init(Cipher.ENCRYPT_MODE, sender.getPrivateKey());
         var signature = c.doFinal(trade_sha256.getBytes(StandardCharsets.ISO_8859_1));
-        Broadcast.tradeRequest(trade, sender.publicKey, signature); // network effect
+        Broadcast.tradeRequest(trade, sender.getPublicKey(), signature); // network effect
     }
 
 

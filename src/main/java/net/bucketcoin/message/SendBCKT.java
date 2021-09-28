@@ -34,23 +34,21 @@ import java.security.NoSuchAlgorithmException;
 
 public class SendBCKT extends Message {
 
-    private final Wallet sender;
     private final Wallet recipient;
     private final double bckt;
     private final double gas_fee;
 
-    public SendBCKT(@NotNull Wallet sender, @NotNull Wallet recipient, double gas_fee, double bckt) {
+    public SendBCKT(@NotNull Wallet recipient, double gas_fee, double bckt) {
 
-        super(sender, recipient, gas_fee, bckt);
-        this.sender = sender;
+        super(recipient, gas_fee, bckt);
         this.recipient = recipient;
         this.bckt = bckt;
         this.gas_fee = gas_fee;
     }
 
     @Override
-    public void send() throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InsufficientBalanceException {
-        Transaction transaction = new Transaction(bckt, sender.publicKey.toString(), recipient.publicKey.toString(), gas_fee);
+    public void send(@NotNull Wallet sender) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InsufficientBalanceException {
+        Transaction transaction = new Transaction(bckt, sender.getPublicKey().toString(), recipient.getPublicKey().toString(), gas_fee);
         String transaction_sha256 = DigestUtils.shaHex(transaction.toString());
         var c = CryptoResources.getStandardCipher();
         c.init(Cipher.ENCRYPT_MODE, sender.getPrivateKey());
@@ -58,6 +56,6 @@ public class SendBCKT extends Message {
         if(!sender.hasEnough(bckt + (gas_fee * 0.000001))) {
             throw new InsufficientBalanceException();
         }
-        Broadcast.transaction(transaction, sender.publicKey, signature); // network effect
+        Broadcast.transaction(transaction, sender.getPublicKey(), signature); // network effect
     }
 }

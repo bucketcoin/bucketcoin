@@ -16,6 +16,7 @@
 
 package net.bucketcoin.wallet;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import net.bucketcoin.util.CryptoResources;
 import net.bucketcoin.crypto.state.StateTrie;
@@ -27,10 +28,13 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 
-public final class Wallet {
+public class Wallet {
 
-    public final PublicKey publicKey;
-    private final PrivateKey privateKey;
+    @Getter
+    private PublicKey publicKey;
+    private PrivateKey privateKey;
+    @Getter
+    protected String address;
 
     @SneakyThrows
     public Wallet() throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
@@ -38,11 +42,7 @@ public final class Wallet {
         KeyPair keyPair = k.generateKeyPair();
         publicKey = keyPair.getPublic();
         privateKey = keyPair.getPrivate();
-    }
-
-    @Contract(" -> new")
-    public @NotNull String getAddress() {
-        return DigestUtils.shaHex(publicKey.toString());
+        this.address = DigestUtils.shaHex(publicKey.toString());
     }
 
     public Key getPrivateKey() {
@@ -51,7 +51,7 @@ public final class Wallet {
 
     @SneakyThrows
     public void sendMessage(@NotNull Message message) {
-        message.send();
+        message.send(this);
     }
 
     public byte[] asBytes() {
@@ -61,6 +61,77 @@ public final class Wallet {
     public boolean hasEnough(double price) {
         var a = StateTrie.queryAddress(getAddress().getBytes(StandardCharsets.ISO_8859_1));
         return price <= a.balance();
+    }
+
+    public static final class NullWallet extends Wallet {
+
+        @Getter
+        private static final Wallet wallet;
+
+        static {
+            try {
+                wallet = new NullWallet();
+            } catch(NoSuchAlgorithmException | NoSuchProviderException | InvalidAlgorithmParameterException e) {
+                throw new InternalError("Exception " + e.getClass().getSimpleName() + " thrown in NullWallet ");
+            }
+        }
+
+        /**
+         * Creates a null wallet.
+         */
+        private NullWallet() throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
+            wallet.publicKey = new PublicKey() {
+                /**
+                 * Unsupported
+                 */
+                @Override
+                public String getAlgorithm() {
+                    throw new UnsupportedOperationException();
+                }
+
+                /**
+                 * Unsupported
+                 */
+                @Override
+                public String getFormat() {
+                    throw new UnsupportedOperationException();
+                }
+
+                /**
+                 * Unsupported
+                 */
+                @Override
+                public byte[] getEncoded() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+            wallet.privateKey = new PrivateKey() {
+                /**
+                 * Unsupported
+                 */
+                @Override
+                public String getAlgorithm() {
+                    throw new UnsupportedOperationException();
+                }
+
+                /**
+                 * Unsupported
+                 */
+                @Override
+                public String getFormat() {
+                    throw new UnsupportedOperationException();
+                }
+
+                /**
+                 * Unsupported
+                 */
+                @Override
+                public byte[] getEncoded() {
+                    throw new UnsupportedOperationException();
+                }
+            };
+            this.address = "NONE";
+        }
     }
 
 }

@@ -14,14 +14,15 @@
  *    limitations under the License.
  */
 
-package net.bucketcoin.runtime.event;
+ package net.bucketcoin.networking.struct;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import net.bucketcoin.block.Blockable;
+import net.bucketcoin.message.Message;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface SelfCatchable {
+import java.io.Serializable;
+
+public record CompleteMessage(Message completeMessage, Blockable product) implements Serializable {
+
+
+
 }

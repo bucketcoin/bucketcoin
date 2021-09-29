@@ -16,6 +16,9 @@
 
 package net.bucketcoin.runtime.exception;
 
+/**
+ * Thrown when the initialization of a particular class / library fails.
+ */
 public class InitializationException extends RuntimeException {
 
 	public InitializationException() {

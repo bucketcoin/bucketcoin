@@ -19,6 +19,7 @@ package net.bucketcoin.contract.proc;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.library.SortedClassLibraryBuilder;
 import lombok.SneakyThrows;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.apache.commons.text.StringEscapeUtils;
@@ -121,7 +122,8 @@ public final class ContractFileOperations {
 		if(!fileToWrite.getName().endsWith(".java")) throw new IllegalArgumentException("File extension must be \".java\"!");
 		//start writing to the file
 		var writer = new PrintWriter(fileToWrite);
-		writer.println("""
+		@Language("JAVA")
+		var s = """
 				// package your.company.project
 				
 				/* These two imports are mandatory imports and the
@@ -157,7 +159,8 @@ public final class ContractFileOperations {
 					public int getVersion() {
 						return 1;
 					}
-				}""");
+				}""";
+		writer.println(s);
 		writer.close();
 	}
 

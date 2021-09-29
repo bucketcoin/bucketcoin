@@ -37,7 +37,7 @@ public class Trade implements Serializable, Blockable {
     private final double GasFee;
 
     /**
-     * @see Message#Message(Wallet, Wallet, List, List, double)
+     * @see Message#Message(Wallet, List, List, double)
      */
     public Trade(@NotNull List<?> toSend, @NotNull List<?> toGet, String sender, String recipient, double gas_fee) {
         this.toSend = toSend;

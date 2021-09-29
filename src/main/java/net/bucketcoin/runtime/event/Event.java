@@ -18,11 +18,15 @@ package net.bucketcoin.runtime.event;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.intellij.lang.annotations.Language;
+import org.intellij.lang.annotations.MagicConstant;
+
+import java.io.Serializable;
 
 /**
  * This class represents an event that can be caught by an associated {@link EventHandler}.
  */
-public abstract class Event {
+public abstract class Event implements Serializable {
 
 	@Getter
 	private final Object[] args;
@@ -37,7 +41,7 @@ public abstract class Event {
 		init(associatedHandler);
 	}
 
-	/**
+	/**  
 	 *
 	 * @throws IllegalCallerException if the class that is calling this method is <br>
 	 * 1. A nested class inside this {@link Event} implementation.
@@ -51,13 +55,6 @@ public abstract class Event {
 		|| executor.equals(getClass())) {
 			throw new IllegalCallerException();
 		}
-		if(this.getClass().isAnnotationPresent(SelfCatchable.class)) {
-			EventHandler<? extends Event> eventHandler = EventCentral.getInstance().eventAssoc.get(this.getClass());
-			eventHandler.handle(this);
-		}
-
-		// BROADCAST EVENT
-		// TODO: 16/9/2021
 	}
 
 	/**
